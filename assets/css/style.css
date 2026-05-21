@@ -1,0 +1,325 @@
+/* ============================================================
+   style.css — Custom stylesheet Perpustakaan Mini
+   ============================================================ */
+
+/* === CSS Variables === */
+:root {
+  --primary:       #1a56db;
+  --primary-dark:  #1343af;
+  --primary-light: #e8effe;
+  --sidebar-bg:    #0f172a;
+  --sidebar-w:     240px;
+  --navbar-h:      60px;
+  --text-main:     #1e293b;
+  --text-muted:    #64748b;
+  --border:        #e2e8f0;
+  --bg-page:       #f1f5f9;
+  --white:         #ffffff;
+  --success:       #16a34a;
+  --danger:        #dc2626;
+  --warning:       #d97706;
+  --radius:        10px;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.08);
+  --shadow-md:     0 4px 12px rgba(0,0,0,.10);
+}
+
+/* === Reset & Base === */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-main);
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+#mainNavbar {
+  background: var(--primary);
+  height: var(--navbar-h);
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1030;
+  box-shadow: 0 2px 8px rgba(26,86,219,.25);
+}
+
+.brand-icon {
+  font-size: 1.3rem;
+  background: rgba(255,255,255,.15);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -.3px;
+}
+
+#mainNavbar .nav-link {
+  color: rgba(255,255,255,.8) !important;
+  font-size: .875rem;
+  font-weight: 500;
+  padding: .4rem .75rem;
+  border-radius: 6px;
+  transition: background .2s, color .2s;
+}
+
+#mainNavbar .nav-link:hover,
+#mainNavbar .nav-link.active {
+  background: rgba(255,255,255,.15);
+  color: #fff !important;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  position: fixed;
+  top: var(--navbar-h);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  overflow-y: auto;
+  z-index: 1020;
+  padding: 1.25rem .75rem;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-section-label {
+  font-size: .65rem;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: .08em;
+  padding: 0 .75rem .4rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .6rem .75rem;
+  border-radius: 8px;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: .875rem;
+  font-weight: 500;
+  transition: background .2s, color .2s;
+  margin-bottom: 2px;
+}
+
+.sidebar-link i { font-size: 1rem; flex-shrink: 0; }
+
+.sidebar-link:hover {
+  background: rgba(255,255,255,.06);
+  color: #e2e8f0;
+}
+
+.sidebar-link.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.sidebar-link.text-danger-soft { color: #f87171; }
+.sidebar-link.text-danger-soft:hover { background: rgba(220,38,38,.15); color: #fca5a5; }
+
+/* ============================================================
+   MAIN CONTENT AREA
+   ============================================================ */
+.main-wrapper {
+  margin-left: var(--sidebar-w);
+  margin-top: var(--navbar-h);
+  min-height: calc(100vh - var(--navbar-h));
+  padding: 1.75rem;
+}
+
+/* ============================================================
+   PAGE HEADER
+   ============================================================ */
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 .2rem;
+}
+
+.page-header p {
+  color: var(--text-muted);
+  margin: 0;
+  font-size: .875rem;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: .925rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+
+/* Stat cards — dashboard */
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow .2s, transform .2s;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 52px; height: 52px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.stat-icon.blue   { background: #dbeafe; color: var(--primary); }
+.stat-icon.green  { background: #dcfce7; color: var(--success); }
+.stat-icon.orange { background: #ffedd5; color: var(--warning); }
+.stat-icon.red    { background: #fee2e2; color: var(--danger);  }
+
+.stat-label {
+  font-size: .78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: .2rem;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+/* ============================================================
+   TABLES
+   ============================================================ */
+.table {
+  font-size: .875rem;
+  margin: 0;
+}
+
+.table thead th {
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+
+.table tbody tr:hover { background: #fafbfc; }
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge-status {
+  padding: .3em .7em;
+  border-radius: 20px;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+.badge-dipinjam { background: #ffedd5; color: #c2410c; }
+.badge-kembali  { background: #dcfce7; color: #15803d; }
+.badge-tersedia { background: #dbeafe; color: #1d4ed8; }
+.badge-habis    { background: #fee2e2; color: #b91c1c; }
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn { font-size: .875rem; font-weight: 500; border-radius: 7px; }
+.btn-primary { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+
+/* ============================================================
+   FORMS
+   ============================================================ */
+.form-label { font-size: .875rem; font-weight: 500; margin-bottom: .35rem; }
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: .875rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.form-control:focus, .form-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26,86,219,.12);
+}
+
+/* Alert / flash message */
+.alert { border-radius: 8px; font-size: .875rem; }
+
+/* ============================================================
+   LOGIN PAGE
+   ============================================================ */
+.login-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f172a 0%, #1a3a6b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 2.5rem 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+
+.login-logo {
+  width: 56px; height: 56px;
+  background: var(--primary);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.75rem;
+  color: #fff;
+  margin: 0 auto 1rem;
+}
+
+/* ============================================================
+   RESPONSIVE — hide sidebar on mobile (simple approach)
+   ============================================================ */
+@media (max-width: 991.98px) {
+  .sidebar  { display: none; }
+  .main-wrapper { margin-left: 0; padding: 1rem; }
+}
