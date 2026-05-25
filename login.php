@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <i class="bi bi-book-half"></i>
     </div>
 
-    <h4 class="text-center fw-700 mb-1" style="font-weight:700;">Perpustakaan Mini</h4>
+    <h4 class="text-center fw-700 mb-1" style="font-weight:700;">Library Space</h4>
     <p class="text-center text-muted small mb-4">Masuk ke sistem manajemen perpustakaan</p>
 
     <?php if ($error): ?>
@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <p class="text-center text-muted small mt-4 mb-0">
-      Sistem Informasi Perpustakaan &copy; <?= date('Y') ?>
+      Library Space &copy; <?= date('Y') ?>
     </p>
   </div>
 

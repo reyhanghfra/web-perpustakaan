@@ -3,14 +3,14 @@
  * includes/header.php
  * Dipanggil di bagian atas setiap halaman
  */
-if (!isset($page_title)) $page_title = 'Perpustakaan Mini';
+if (!isset($page_title)) $page_title = 'Library Space';
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= htmlspecialchars($page_title) ?> — Perpustakaan Mini</title>
+  <title><?= htmlspecialchars($page_title) ?> — Library Space</title>
 
   <!-- Bootstrap 5 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">

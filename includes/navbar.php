@@ -10,7 +10,7 @@
     <!-- Brand -->
     <a class="navbar-brand d-flex align-items-center gap-2" href="/perpustakaan/pages/dashboard/">
       <span class="brand-icon"><i class="bi bi-book-half"></i></span>
-      <span class="brand-name">Perpustakaan Mini</span>
+      <span class="brand-name">Library Space</span>
     </a>
 
     <!-- Toggler mobile -->
