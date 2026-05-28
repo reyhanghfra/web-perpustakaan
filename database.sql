@@ -106,8 +106,8 @@ INSERT INTO kategori (nama_kategori) VALUES
 ('Sains'),
 ('Sejarah'),
 ('Agama'),
-('Anak-anak')
-('Motivasi')
+('Anak-anak'),
+('Motivasi'),
 ('Pengembangan Diri');
 
 -- ============================================================

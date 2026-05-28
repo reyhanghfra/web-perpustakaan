@@ -73,9 +73,9 @@ $result = mysqli_query($koneksi, $sql);
                       </button>
                     </td>
                   </tr>
-                <?php 
-                  endwhile; 
-                else: 
+                <?php
+                  endwhile;
+                else:
                 ?>
                   <tr>
                     <td colspan="8" class="text-center text-muted py-5">
