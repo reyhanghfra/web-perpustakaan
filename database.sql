@@ -106,7 +106,9 @@ INSERT INTO kategori (nama_kategori) VALUES
 ('Sains'),
 ('Sejarah'),
 ('Agama'),
-('Anak-anak');
+('Anak-anak')
+('Motivasi')
+('Pengembangan Diri');
 
 -- ============================================================
 -- DATA DUMMY: buku (minimal 10 baris)
