@@ -9,6 +9,6 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (!isset($_SESSION['login']) || $_SESSION['login'] !== true) {
-    header('Location: /perpustakaan/login.php');
+    header('Location: /web-perpustakaan/login.php');
     exit;
 }

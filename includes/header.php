@@ -20,6 +20,6 @@ if (!isset($page_title)) $page_title = 'Library Space';
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <!-- Custom CSS -->
-  <link rel="stylesheet" href="/perpustakaan/assets/css/style.css">
+  <link rel="stylesheet" href="/web-perpustakaan/assets/css/style.css">
 </head>
 <body>

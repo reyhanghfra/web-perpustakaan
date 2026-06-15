@@ -6,7 +6,7 @@ session_start();
 
 // Jika sudah login, redirect ke dashboard
 if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
-    header('Location: /perpustakaan/pages/dashboard/');
+    header('Location: /web-perpustakaan/pages/dashboard/');
     exit;
 }
 
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['username']= $user['username'];
                 $_SESSION['nama']    = $user['nama'];
 
-                header('Location: /perpustakaan/pages/dashboard/');
+                header('Location: /web-perpustakaan/pages/dashboard/');
                 exit;
             } else {
                 $error = 'Username atau password salah.';
@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/perpustakaan/assets/js/main.js"></script>
+  <script src="/web-perpustakaan/assets/js/main.js"></script>
   <script>
     function togglePassword() {
       const input = document.getElementById('password');
