@@ -1,7 +1,4 @@
 <?php
-/**
- * pages/dashboard/index.php — Halaman Dashboard
- */
 require_once __DIR__ . '/../../includes/auth_guard.php';
 require_once __DIR__ . '/../../config/koneksi.php';
 
@@ -116,7 +113,7 @@ require_once __DIR__ . '/../../includes/header.php';
               </div>
             </div>
             <div class="card-footer bg-white border-top text-end">
-              <a href="/perpustakaan/pages/buku/" class="btn btn-sm btn-outline-primary">
+              <a href="/web-perpustakaan/pages/buku/" class="btn btn-sm btn-outline-primary">
                 Lihat semua buku <i class="bi bi-arrow-right"></i>
               </a>
             </div>
@@ -157,7 +154,7 @@ require_once __DIR__ . '/../../includes/header.php';
               </div>
             </div>
             <div class="card-footer bg-white border-top text-end">
-              <a href="/perpustakaan/pages/anggota/" class="btn btn-sm btn-outline-success">
+              <a href="/web-perpustakaan/pages/anggota/" class="btn btn-sm btn-outline-success">
                 Lihat semua anggota <i class="bi bi-arrow-right"></i>
               </a>
             </div>

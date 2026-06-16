@@ -1,11 +1,11 @@
 <?php
 /**
- * login.php — Halaman Login
+ * login-anggota.php — Halaman Login Anggota
  */
 session_start();
 
-if (isset($_SESSION['login']) && $_SESSION['login'] === true) {
-  header('Location: /web-perpustakaan/pages/dashboard/');
+if (isset($_SESSION['anggota_login']) && $_SESSION['anggota_login'] === true) {
+  header('Location: /web-perpustakaan/anggota/dashboard.php');
   exit;
 }
 
@@ -20,20 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($username === '' || $password === '') {
     $error = 'Username dan password wajib diisi.';
   } else {
-    $sql = "SELECT id_user, username, password, nama, role FROM users WHERE username = '$username' LIMIT 1";
+    $sql = "SELECT id_anggota, username, password, nama FROM anggota WHERE username = '$username' LIMIT 1";
     $result = mysqli_query($koneksi, $sql);
 
     if ($result && mysqli_num_rows($result) === 1) {
-      $user = mysqli_fetch_assoc($result);
+      $anggota = mysqli_fetch_assoc($result);
 
-      if (password_verify($password, $user['password'])) {
-        $_SESSION['login']    = true;
-        $_SESSION['id_user']  = $user['id_user'];
-        $_SESSION['username'] = $user['username'];
-        $_SESSION['nama']     = $user['nama'];
-        $_SESSION['role']     = $user['role'];
+      if (password_verify($password, $anggota['password'])) {
+        $_SESSION['anggota_login']    = true;
+        $_SESSION['anggota_id']       = $anggota['id_anggota'];
+        $_SESSION['anggota_username'] = $anggota['username'];
+        $_SESSION['anggota_nama']     = $anggota['nama'];
 
-        header('Location: /web-perpustakaan/pages/dashboard/');
+        header('Location: /web-perpustakaan/anggota/dashboard.php');
         exit;
       } else {
         $error = 'Username atau password salah.';
@@ -49,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — Perpustakaan Mini</title>
+  <title>Login Anggota — Perpustakaan Mini</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,14 +60,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="login-card">
     <div class="login-logo">
-      <i class="bi bi-book-half"></i>
+      <i class="bi bi-person-badge"></i>
     </div>
 
-    <h4 class="text-center fw-700 mb-1" style="font-weight:700;">Library Space</h4>
-    <p class="text-center text-muted small mb-4">Masuk ke sistem manajemen perpustakaan</p>
+    <h4 class="text-center mb-1" style="font-weight:700;">Portal Anggota</h4>
+    <p class="text-center text-muted small mb-4">Masuk ke portal anggota perpustakaan</p>
 
     <?php if ($error): ?>
-      <div class="alert alert-danger alert-auto-close d-flex align-items-center gap-2 mb-3" role="alert">
+      <div class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
         <i class="bi bi-exclamation-circle-fill"></i>
         <?= htmlspecialchars($error) ?>
       </div>
@@ -99,18 +98,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">
+      <button type="submit" class="btn btn-success w-100">
         <i class="bi bi-box-arrow-in-right me-1"></i> Masuk
       </button>
     </form>
 
-    <p class="text-center text-muted small mt-4 mb-0">
+    <p class="text-center mt-3 mb-0 small">
+      Login sebagai petugas? <a href="/web-perpustakaan/login.php">Klik di sini</a>
+    </p>
+
+    <p class="text-center text-muted small mt-3 mb-0">
       Library Space &copy; <?= date('Y') ?>
     </p>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="/web-perpustakaan/assets/js/main.js"></script>
   <script>
     function togglePassword() {
       const input = document.getElementById('password');
@@ -125,5 +127,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
   </script>
 </body>
-
 </html>

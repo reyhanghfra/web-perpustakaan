@@ -25,15 +25,21 @@ $current = $_SERVER['REQUEST_URI'];
     </a>
 
     <a href="/web-perpustakaan/pages/kategori/index.php"
-class="sidebar-link">
-<i class="bi bi-tags"></i>
-<span>Data Kategori</span>
-</a>
+       class="sidebar-link">
+      <i class="bi bi-tags"></i>
+      <span>Data Kategori</span>
+    </a>
 
     <a href="/web-perpustakaan/pages/anggota/"
        class="sidebar-link <?= strpos($current, '/anggota') !== false ? 'active' : '' ?>">
       <i class="bi bi-people"></i>
       <span>Data Anggota</span>
+    </a>
+
+    <a href="/web-perpustakaan/pages/admin/index.php"
+       class="sidebar-link <?= strpos($current, '/admin') !== false ? 'active' : '' ?>">
+      <i class="bi bi-person-gear"></i>
+      <span>Data Admin</span>
     </a>
 
     <div class="sidebar-section-label mt-3">TRANSAKSI</div>

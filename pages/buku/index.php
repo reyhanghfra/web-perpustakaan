@@ -8,10 +8,17 @@ require_once __DIR__ . '/../../config/koneksi.php';
 $page_title = 'Data Buku';
 require_once __DIR__ . '/../../includes/header.php';
 
-// Query mengambil data buku beserta nama kategorinya
+$search = trim($_GET['search'] ?? '');
+$where = '';
+if ($search !== '') {
+  $s = mysqli_real_escape_string($koneksi, $search);
+  $where = "WHERE buku.judul LIKE '%$s%' OR buku.penulis LIKE '%$s%' OR buku.penerbit LIKE '%$s%' OR kategori.nama_kategori LIKE '%$s%'";
+}
+
 $sql = "SELECT buku.*, kategori.nama_kategori 
         FROM buku 
         JOIN kategori ON buku.id_kategori = kategori.id_kategori 
+        $where
         ORDER BY buku.id_buku DESC";
 $result = mysqli_query($koneksi, $sql);
 ?>
@@ -33,6 +40,33 @@ $result = mysqli_query($koneksi, $sql);
         </a>
       </div>
 
+      <!-- Search Bar -->
+      <div class="card shadow-sm border-0 mb-3">
+        <div class="card-body py-3">
+          <form method="GET" action="">
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" name="search" class="form-control border-start-0"
+                placeholder="Cari judul, penulis, penerbit, atau kategori..."
+                value="<?= htmlspecialchars($search) ?>">
+              <?php if ($search): ?>
+                <a href="index.php" class="btn btn-outline-secondary">
+                  <i class="bi bi-x-lg"></i>
+                </a>
+              <?php endif; ?>
+              <button type="submit" class="btn btn-primary">Cari</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <?php if ($search): ?>
+        <p class="text-muted small mb-2">
+          Menampilkan hasil pencarian untuk: <strong>"<?= htmlspecialchars($search) ?>"</strong>
+          — <?= mysqli_num_rows($result) ?> data ditemukan
+        </p>
+      <?php endif; ?>
+
       <div class="card shadow-sm border-0">
         <div class="card-body p-0">
           <div class="table-responsive">
@@ -51,7 +85,7 @@ $result = mysqli_query($koneksi, $sql);
               </thead>
               <tbody>
                 <?php 
-                if (mysqli_num_rows($result) > 0): 
+                if ($result && mysqli_num_rows($result) > 0): 
                   $no = 1;
                   while ($row = mysqli_fetch_assoc($result)):
                 ?>
@@ -80,7 +114,7 @@ $result = mysqli_query($koneksi, $sql);
                   <tr>
                     <td colspan="8" class="text-center text-muted py-5">
                       <i class="bi bi-book-half d-block display-4 mb-2 text-black-50"></i>
-                      Belum ada data buku di database.
+                      <?= $search ? 'Tidak ada buku yang cocok dengan pencarian.' : 'Belum ada data buku di database.' ?>
                     </td>
                   </tr>
                 <?php endif; ?>
@@ -91,4 +125,15 @@ $result = mysqli_query($koneksi, $sql);
       </div>
     </div>
 
-  </div></div><?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+  </div>
+</div>
+
+<script>
+function konfirmasiHapus(url, judul) {
+  if (confirm('Hapus buku "' + judul + '"?')) {
+    window.location.href = url;
+  }
+}
+</script>
+
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

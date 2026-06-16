@@ -8,12 +8,16 @@ require_once __DIR__ . '/../../config/koneksi.php';
 $page_title = 'Data Anggota';
 require_once __DIR__ . '/../../includes/header.php';
 
-// Ambil semua data anggota
-$sql = "SELECT * FROM anggota ORDER BY id_anggota DESC";
+$search = trim($_GET['search'] ?? '');
+$where = '';
+if ($search !== '') {
+  $s = mysqli_real_escape_string($koneksi, $search);
+  $where = "WHERE nama LIKE '%$s%' OR no_hp LIKE '%$s%' OR alamat LIKE '%$s%'";
+}
+
+$sql = "SELECT * FROM anggota $where ORDER BY id_anggota DESC";
 $result = mysqli_query($koneksi, $sql);
 if ($result === false) {
-  // Jangan tampilkan error SQL merah yang bisa mengganggu tampilan
-  // cukup anggap tidak ada data
   $result = null;
 }
 ?>
@@ -34,6 +38,33 @@ if ($result === false) {
           <i class="bi bi-plus-lg me-1"></i> Tambah Anggota
         </a>
       </div>
+
+      <!-- Search Bar -->
+      <div class="card shadow-sm border-0 mb-3">
+        <div class="card-body py-3">
+          <form method="GET" action="">
+            <div class="input-group">
+              <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+              <input type="text" name="search" class="form-control border-start-0"
+                placeholder="Cari nama, no HP, atau alamat..."
+                value="<?= htmlspecialchars($search) ?>">
+              <?php if ($search): ?>
+                <a href="index.php" class="btn btn-outline-secondary">
+                  <i class="bi bi-x-lg"></i>
+                </a>
+              <?php endif; ?>
+              <button type="submit" class="btn btn-success">Cari</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <?php if ($search): ?>
+        <p class="text-muted small mb-2">
+          Hasil pencarian: <strong>"<?= htmlspecialchars($search) ?>"</strong>
+          — <?= $result ? mysqli_num_rows($result) : 0 ?> data ditemukan
+        </p>
+      <?php endif; ?>
 
       <div class="card shadow-sm border-0">
         <div class="card-body p-0">
@@ -77,7 +108,7 @@ if ($result === false) {
                   <tr>
                     <td colspan="5" class="text-center text-muted py-5">
                       <i class="bi bi-people d-block display-4 mb-2 text-black-50"></i>
-                      Belum ada data anggota di database.
+                      <?= $search ? 'Tidak ada anggota yang cocok dengan pencarian.' : 'Belum ada data anggota di database.' ?>
                     </td>
                   </tr>
                 <?php endif; ?>
@@ -100,4 +131,3 @@ if ($result === false) {
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
-
