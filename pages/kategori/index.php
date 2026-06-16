@@ -35,8 +35,9 @@ ORDER BY k.id_kategori DESC
                     <p>Kelola semua kategori buku perpustakaan di sini.</p>
                 </div>
 
-                <?php if ($_SESSION['role'] === 'admin'): ?>
+                <?php if (($_SESSION['role'] ?? 'admin') === 'admin'): ?>
                     <a href="tambah.php" class="btn btn-primary shadow-sm">
+
                         <i class="bi bi-plus-lg me-1"></i>
                         Tambah Kategori
                     </a>
@@ -150,7 +151,8 @@ ORDER BY k.id_kategori DESC
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <?php if ($_SESSION['role'] === 'admin'): ?>
+                                            <?php if (($_SESSION['role'] ?? 'admin') === 'admin'): ?>
+
                                                 <a href="edit.php?id=<?= $row['id_kategori'] ?>"
                                                     class="btn btn-sm btn-outline-primary"
                                                     title="Edit">

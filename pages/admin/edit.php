@@ -3,14 +3,15 @@ session_start();
 require_once '../../config/koneksi.php';
 require_once '../../includes/auth_guard.php';
 
-if ($_SESSION['role'] !== 'admin') {
-    header('Location: /web-perpustakaan/pages/dashboard/');
-    exit;
-}
+// Validasi login saja (role tidak tersedia di database.sql dan tidak diset di login.php)
 
-$id_user = $_GET['id'] ?? null;
+
+    $id_user = $_GET['id'] ?? null;
 $error = '';
 $staff = null;
+
+// Validasi id numeric supaya tidak memicu error/bind_param kosong
+$id_user = filter_var($id_user, FILTER_VALIDATE_INT);
 
 if ($id_user) {
     $query = "SELECT * FROM users WHERE id_user = ?";
@@ -26,12 +27,17 @@ if ($id_user) {
     }
 }
 
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     $id_user = $_POST['id_user'] ?? null;
+    $id_user = filter_var($id_user, FILTER_VALIDATE_INT);
     $username = trim($_POST['username'] ?? '');
+
     $nama = trim($_POST['nama'] ?? '');
-    $role = $_POST['role'] ?? 'petugas';
+    // Kolom role tidak ada pada database.sql, jadi role tidak diproses.
     $password = $_POST['password'] ?? '';
+
 
     if (empty($username) || empty($nama)) {
         $error = 'Username dan nama wajib diisi!';
@@ -48,21 +54,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Username sudah digunakan user lain!';
         } else {
             if (empty($password)) {
-                $update_query = "UPDATE users SET username = ?, nama = ?, role = ? WHERE id_user = ?";
+                $update_query = "UPDATE users SET username = ?, nama = ? WHERE id_user = ?";
                 $stmt = mysqli_prepare($koneksi, $update_query);
-                mysqli_stmt_bind_param($stmt, "sssi", $username, $nama, $role, $id_user);
+                mysqli_stmt_bind_param($stmt, "ssi", $username, $nama, $id_user);
+
             } else {
                 if (strlen($password) < 6) {
                     $error = 'Password minimal 6 karakter!';
                 } else {
                     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-                    $update_query = "UPDATE users SET username = ?, password = ?, nama = ?, role = ? WHERE id_user = ?";
+                    $update_query = "UPDATE users SET username = ?, password = ?, nama = ? WHERE id_user = ?";
                     $stmt = mysqli_prepare($koneksi, $update_query);
-                    mysqli_stmt_bind_param($stmt, "ssssi", $username, $hashed_password, $nama, $role, $id_user);
+                    mysqli_stmt_bind_param($stmt, "sssi", $username, $hashed_password, $nama, $id_user);
+
+                    // Note: database.sql tidak punya kolom role, jadi tidak diproses.
+
+
                 }
             }
 
-            if (empty($error) && mysqli_stmt_execute($stmt)) {
+            if (empty($error) && isset($stmt) && $stmt && mysqli_stmt_execute($stmt)) {
+
                 header('Location: /web-perpustakaan/pages/admin/?status=updated');
                 exit;
             } elseif (empty($error)) {
@@ -142,17 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     required value="<?php echo htmlspecialchars($staff['nama']); ?>">
                             </div>
 
-                            <div class="mb-3">
-                                <label for="role" class="form-label">Role</label>
-                                <select class="form-select" id="role" name="role" required>
-                                    <option value="petugas" <?php echo ($staff['role'] === 'petugas') ? 'selected' : ''; ?>>
-                                        Petugas
-                                    </option>
-                                    <option value="admin" <?php echo ($staff['role'] === 'admin') ? 'selected' : ''; ?>>
-                                        Admin
-                                    </option>
-                                </select>
-                            </div>
+
 
                             <hr>
 
