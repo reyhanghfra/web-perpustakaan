@@ -80,7 +80,7 @@ $result = mysqli_query($koneksi, $sql);
                   <th class="text-center">Tahun</th>
                   <th class="text-center">Stok</th>
                   <th>Kategori</th>
-                  <th class="text-center" style="width: 120px;">Aksi</th>
+                  <th class="text-center" style="width: 140px;">Aksi</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,9 +100,19 @@ $result = mysqli_query($koneksi, $sql);
                         <?= $row['stok'] ?>
                       </span>
                     </td>
-                    <td><span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1"><?= htmlspecialchars($row['nama_kategori']) ?></span></td>
+                    <td>
+                      <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-2 py-1">
+                        <?= htmlspecialchars($row['nama_kategori']) ?>
+                      </span>
+                    </td>
                     <td class="text-center">
-                      <button onclick="konfirmasiHapus('hapus.php?id=<?= $row['id_buku'] ?>', '<?= htmlspecialchars($row['judul']) ?>')" class="btn btn-sm btn-outline-danger" title="Hapus">
+                      <!-- Tombol Edit (BARU) -->
+                      <a href="edit.php?id=<?= $row['id_buku'] ?>" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <!-- Tombol Hapus -->
+                      <button onclick="konfirmasiHapus('hapus.php?id=<?= $row['id_buku'] ?>', '<?= htmlspecialchars($row['judul'], ENT_QUOTES) ?>')" 
+                              class="btn btn-sm btn-outline-danger" title="Hapus">
                         <i class="bi bi-trash"></i>
                       </button>
                     </td>

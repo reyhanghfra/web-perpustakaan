@@ -19,13 +19,14 @@ $error   = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nama     = trim(mysqli_real_escape_string($koneksi, $_POST['nama']     ?? ''));
-    $no_hp    = trim(mysqli_real_escape_string($koneksi, $_POST['no_hp']    ?? ''));
-    $password = trim($_POST['password'] ?? '');
-    $konfirm  = trim($_POST['konfirmasi_password'] ?? '');
+$nama     = trim(mysqli_real_escape_string($koneksi, $_POST['nama']     ?? ''));
+$no_hp    = trim(mysqli_real_escape_string($koneksi, $_POST['no_hp']    ?? ''));
+$alamat   = trim(mysqli_real_escape_string($koneksi, $_POST['alamat']   ?? ''));
+$password = trim($_POST['password'] ?? '');
+$konfirm  = trim($_POST['konfirmasi_password'] ?? '');
 
     // Validasi kosong
-    if ($nama === '' || $no_hp === '' || $password === '') {
+if ($nama === '' || $no_hp === '' || $alamat === '' || $password === '') {
         $error = 'Semua kolom wajib diisi.';
     }
     // Validasi format no HP
@@ -56,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             } else {
                 // Simpan ke tabel anggota (alamat dikosongkan / default)
                 $sql_anggota = "INSERT INTO anggota (nama, alamat, no_hp)
-                                VALUES ('$nama', '-', '$no_hp')";
+                                VALUES ('$nama', '$alamat', '$no_hp')";
 
                 if (mysqli_query($koneksi, $sql_anggota)) {
                     $id_anggota_baru = mysqli_insert_id($koneksi);
@@ -149,6 +150,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                  maxlength="15" required>
         </div>
         <div class="form-text">Nomor ini digunakan untuk notifikasi booking via WhatsApp.</div>
+      </div>
+
+      <!-- Alamat -->
+      <div class="mb-3">
+        <label for="alamat" class="form-label">Alamat</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+          <textarea id="alamat" name="alamat" class="form-control"
+                    placeholder="Masukkan alamat lengkap" rows="2" required><?= htmlspecialchars($_POST['alamat'] ?? '') ?></textarea>
+        </div>
       </div>
 
       <!-- Password -->

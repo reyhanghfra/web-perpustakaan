@@ -8,17 +8,15 @@ $id = $_SESSION['anggota_id'];
 
 $pinjam = mysqli_query($koneksi, "
   SELECT p.id_peminjaman, p.tanggal_pinjam, p.tanggal_kembali, p.status,
-         GROUP_CONCAT(b.judul SEPARATOR ', ') as judul_buku
+         b.judul as judul_buku
   FROM peminjaman p
-  JOIN detail_peminjaman dp ON p.id_peminjaman = dp.id_peminjaman
-  JOIN buku b ON dp.id_buku = b.id_buku
+  JOIN buku b ON p.id_buku = b.id_buku
   WHERE p.id_anggota = $id
-  GROUP BY p.id_peminjaman
   ORDER BY p.id_peminjaman DESC
 ");
 
-$total_pinjam  = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM peminjaman WHERE id_anggota = $id AND status = 'dipinjam'"))[0];
-$total_kembali = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM peminjaman WHERE id_anggota = $id AND status = 'kembali'"))[0];
+$total_pinjam  = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM peminjaman WHERE id_anggota = $id AND status = 'Sedang Dipinjam'"))[0];
+$total_kembali = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM peminjaman WHERE id_anggota = $id AND status = 'Kembali'"))[0];
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -104,10 +102,12 @@ $total_kembali = mysqli_fetch_row(mysqli_query($koneksi, "SELECT COUNT(*) FROM p
                 <td><?= $row['tanggal_pinjam'] ?></td>
                 <td><?= $row['tanggal_kembali'] ?></td>
                 <td>
-                  <?php if ($row['status'] === 'dipinjam'): ?>
-                    <span class="badge bg-warning text-dark">Dipinjam</span>
-                  <?php else: ?>
+                  <?php if ($row['status'] === 'Sedang Dipinjam'): ?>
+                    <span class="badge bg-warning text-dark">Sedang Dipinjam</span>
+                  <?php elseif ($row['status'] === 'Kembali'): ?>
                     <span class="badge bg-success">Dikembalikan</span>
+                  <?php else: ?>
+                    <span class="badge bg-secondary"><?= htmlspecialchars($row['status']) ?></span>
                   <?php endif; ?>
                 </td>
               </tr>

@@ -104,7 +104,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </button>
     </form>
 
-    <p class="text-center text-muted small mt-4 mb-0">
+    <p class="text-center small mt-3 mb-0">
+      Belum punya akun?
+      <a href="#" class="text-primary fw-semibold text-decoration-none"
+         data-bs-toggle="modal" data-bs-target="#modalDaftar">
+        <i class="bi bi-person-plus me-1"></i>Daftar di sini
+      </a>
+    </p>
+
+    <p class="text-center small mt-2 mb-0">
+      Login sebagai anggota?
+      <a href="/web-perpustakaan/login_anggota.php" class="text-success fw-semibold text-decoration-none">
+        <i class="bi bi-person-badge me-1"></i>Portal Anggota
+      </a>
+    </p>
+
+    <p class="text-center text-muted small mt-3 mb-0">
       Library Space &copy; <?= date('Y') ?>
     </p>
   </div>
@@ -178,6 +193,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
               <div class="form-text">Digunakan untuk notifikasi booking via WhatsApp.</div>
             </div>
 
+            <!-- Alamat -->
+            <div class="mb-3">
+              <label for="daftar_alamat" class="form-label">Alamat</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                <textarea id="daftar_alamat" name="alamat" class="form-control"
+                          placeholder="Masukkan alamat lengkap" rows="2" required></textarea>
+              </div>
+            </div>
+
             <!-- Password -->
             <div class="mb-3">
               <label for="daftar_password" class="form-label">Password</label>
@@ -246,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
       const formData = new FormData(this);
 
-      fetch('/perpustakaan/proses_daftar.php', {
+      fetch('/web-perpustakaan/proses_daftar.php', {
         method: 'POST',
         body: formData
       })
