@@ -1,16 +1,16 @@
 <?php
-session_start();
-require_once '../../config/koneksi.php';
-require_once '../../includes/auth_guard.php';
+/**
+ * pages/admin/index.php — Data Admin/Staff
+ */
+require_once __DIR__ . '/../../includes/auth_guard.php';
+require_once __DIR__ . '/../../config/koneksi.php';
 
-if (!isset($_SESSION['id_user'])) {
-    header('Location: /web-perpustakaan/login.php');
-    exit;
-}
+$page_title = 'Data Admin';
+require_once __DIR__ . '/../../includes/header.php';
+
 $query = "SELECT id_user, username, nama, role, created_at FROM users ORDER BY created_at DESC";
 $result = mysqli_query($koneksi, $query);
 $staff_list = [];
-
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
         $staff_list[] = $row;
@@ -19,142 +19,105 @@ if ($result) {
 
 $message = '';
 $message_type = '';
-
 if (isset($_GET['status'])) {
-    if ($_GET['status'] === 'added') {
-        $message = 'Staff berhasil ditambahkan!';
-        $message_type = 'success';
-    } elseif ($_GET['status'] === 'updated') {
-        $message = 'Staff berhasil diperbarui!';
-        $message_type = 'success';
-    } elseif ($_GET['status'] === 'deleted') {
-        $message = 'Staff berhasil dihapus!';
-        $message_type = 'success';
-    } elseif ($_GET['status'] === 'error') {
-        $message = 'Terjadi kesalahan!';
-        $message_type = 'danger';
-    }
+    if ($_GET['status'] === 'added')   { $message = 'Staff berhasil ditambahkan!'; $message_type = 'success'; }
+    elseif ($_GET['status'] === 'updated') { $message = 'Staff berhasil diperbarui!'; $message_type = 'success'; }
+    elseif ($_GET['status'] === 'deleted') { $message = 'Staff berhasil dihapus!'; $message_type = 'success'; }
+    elseif ($_GET['status'] === 'error')   { $message = 'Terjadi kesalahan!'; $message_type = 'danger'; }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin/Staff - Perpustakaan Mini</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .page-title {
-            margin: 30px 0 20px;
-        }
-        .btn-add {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        .btn-add:hover {
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-        }
-        .card {
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-top: 20px;
-        }
-        .table thead {
-            background-color: #f8f9fa;
-        }
-        .badge-admin {
-            background-color: #dc3545;
-        }
-        .badge-petugas {
-            background-color: #0d6efd;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid">
-        <?php include '../../includes/navbar.php'; ?>
-        
-        <div class="container">
-            <?php if ($message): ?>
-                <div class="alert alert-<?php echo $message_type; ?> alert-dismissible fade show mt-3" role="alert">
-                    <?php echo htmlspecialchars($message); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
+<div class="d-flex">
+  <?php require_once __DIR__ . '/../../includes/sidebar.php'; ?>
 
-            <div class="d-flex justify-content-between align-items-center page-title">
-                <h2>Admin/Staff</h2>
-                <a href="tambah.php" class="btn-add">
-                    <i class="fas fa-plus"></i> Tambah Staff
-                </a>
-            </div>
+  <div class="main-wrapper flex-grow-1">
+    <?php require_once __DIR__ . '/../../includes/navbar.php'; ?>
 
-            <div class="card">
-                <div class="card-body">
-                    <?php if (count($staff_list) > 0): ?>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th width="5%">#</th>
-                                        <th width="25%">Username</th>
-                                        <th width="30%">Nama</th>
-                                        <th width="15%">Role</th>
-                                        <th width="15%">Terdaftar</th>
-                                        <th width="10%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php 
-                                    $no = 1;
-                                    foreach ($staff_list as $staff): 
-                                    ?>
-                                        <tr>
-                                            <td><?php echo $no++; ?></td>
-                                            <td><code><?php echo htmlspecialchars($staff['username']); ?></code></td>
-                                            <td><?php echo htmlspecialchars($staff['nama']); ?></td>
-                                            <td>
-                                                <span class="badge badge-<?php echo strtolower($staff['role']); ?>">
-                                                    <?php echo ucfirst($staff['role']); ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <small><?php echo date('d M Y', strtotime($staff['created_at'])); ?></small>
-                                            </td>
-                                            <td>
-                                                <a href="edit.php?id=<?php echo $staff['id_user']; ?>" 
-                                                   class="btn btn-sm btn-warning">Edit</a>
-                                                <a href="hapus.php?id=<?php echo $staff['id_user']; ?>" 
-                                                   class="btn btn-sm btn-danger"
-                                                   onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php else: ?>
-                        <p class="text-center text-muted py-5">Belum ada data staff</p>
-                    <?php endif; ?>
-                </div>
-                <div class="card-footer text-muted">
-                    <small>Total: <?php echo count($staff_list); ?> staff</small>
-                </div>
-            </div>
+    <div class="pt-2 px-4">
+
+      <?php if ($message): ?>
+        <div class="alert alert-<?= $message_type ?> alert-dismissible fade show mt-3" role="alert">
+          <?= htmlspecialchars($message) ?>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-    </div>
+      <?php endif; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+      <div class="page-header d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h1><i class="bi bi-person-gear me-2 text-primary"></i>Data Admin/Staff</h1>
+          <p>Kelola akun admin dan petugas perpustakaan.</p>
+        </div>
+        <?php if ($_SESSION['role'] === 'admin'): ?>
+        <a href="tambah.php" class="btn btn-primary">
+          <i class="bi bi-plus-lg me-1"></i> Tambah Staff
+        </a>
+        <?php endif; ?>
+      </div>
+
+      <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center" style="width:60px;">#</th>
+                  <th>Username</th>
+                  <th>Nama</th>
+                  <th>Role</th>
+                  <th>Terdaftar</th>
+                  <?php if ($_SESSION['role'] === 'admin'): ?>
+                  <th class="text-center" style="width:140px;">Aksi</th>
+                  <?php endif; ?>
+                </tr>
+              </thead>
+              <tbody>
+                <?php if (count($staff_list) > 0):
+                  $no = 1;
+                  foreach ($staff_list as $staff): ?>
+                  <tr>
+                    <td class="text-center text-muted"><?= $no++ ?></td>
+                    <td><code><?= htmlspecialchars($staff['username']) ?></code></td>
+                    <td class="fw-semibold"><?= htmlspecialchars($staff['nama']) ?></td>
+                    <td>
+                      <?php if ($staff['role'] === 'admin'): ?>
+                        <span class="badge bg-danger">Admin</span>
+                      <?php else: ?>
+                        <span class="badge bg-primary">Petugas</span>
+                      <?php endif; ?>
+                    </td>
+                    <td class="text-muted small"><?= date('d M Y', strtotime($staff['created_at'])) ?></td>
+                    <?php if ($_SESSION['role'] === 'admin'): ?>
+                    <td class="text-center">
+                      <a href="edit.php?id=<?= $staff['id_user'] ?>" class="btn btn-sm btn-outline-warning" title="Edit">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <a href="hapus.php?id=<?= $staff['id_user'] ?>"
+                         class="btn btn-sm btn-outline-danger"
+                         onclick="return confirm('Yakin ingin menghapus?')" title="Hapus">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </td>
+                    <?php endif; ?>
+                  </tr>
+                <?php endforeach; else: ?>
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-5">
+                      <i class="bi bi-people d-block display-4 mb-2 text-black-50"></i>
+                      Belum ada data staff.
+                    </td>
+                  </tr>
+                <?php endif; ?>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer text-muted small">
+          Total: <?= count($staff_list) ?> staff
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

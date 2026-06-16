@@ -1,4 +1,5 @@
 <?php
+
 /**
  * includes/sidebar.php
  * Sidebar navigasi kiri
@@ -11,7 +12,7 @@ $current = $_SERVER['REQUEST_URI'];
     <div class="sidebar-section-label">MENU UTAMA</div>
 
     <a href="/web-perpustakaan/pages/dashboard/"
-       class="sidebar-link <?= strpos($current, '/dashboard') !== false ? 'active' : '' ?>">
+      class="sidebar-link <?= strpos($current, '/dashboard') !== false ? 'active' : '' ?>">
       <i class="bi bi-speedometer2"></i>
       <span>Dashboard</span>
     </a>
@@ -19,25 +20,25 @@ $current = $_SERVER['REQUEST_URI'];
     <div class="sidebar-section-label mt-3">DATA MASTER</div>
 
     <a href="/web-perpustakaan/pages/buku/"
-       class="sidebar-link <?= strpos($current, '/buku') !== false ? 'active' : '' ?>">
+      class="sidebar-link <?= strpos($current, '/buku') !== false ? 'active' : '' ?>">
       <i class="bi bi-journals"></i>
       <span>Data Buku</span>
     </a>
 
     <a href="/web-perpustakaan/pages/kategori/index.php"
-       class="sidebar-link">
+      class="sidebar-link">
       <i class="bi bi-tags"></i>
       <span>Data Kategori</span>
     </a>
 
     <a href="/web-perpustakaan/pages/anggota/"
-       class="sidebar-link <?= strpos($current, '/anggota') !== false ? 'active' : '' ?>">
+      class="sidebar-link <?= strpos($current, '/anggota') !== false ? 'active' : '' ?>">
       <i class="bi bi-people"></i>
       <span>Data Anggota</span>
     </a>
 
     <a href="/web-perpustakaan/pages/admin/index.php"
-       class="sidebar-link <?= strpos($current, '/admin') !== false ? 'active' : '' ?>">
+      class="sidebar-link <?= strpos($current, '/admin') !== false ? 'active' : '' ?>">
       <i class="bi bi-person-gear"></i>
       <span>Data Admin</span>
     </a>
@@ -45,7 +46,7 @@ $current = $_SERVER['REQUEST_URI'];
     <div class="sidebar-section-label mt-3">TRANSAKSI</div>
 
     <a href="/web-perpustakaan/pages/peminjaman/"
-       class="sidebar-link <?= strpos($current, '/peminjaman') !== false ? 'active' : '' ?>">
+      class="sidebar-link <?= strpos($current, '/peminjaman') !== false ? 'active' : '' ?>">
       <i class="bi bi-arrow-left-right"></i>
       <span>Peminjaman</span>
     </a>
