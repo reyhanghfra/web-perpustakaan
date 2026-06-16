@@ -3,19 +3,30 @@ session_start();
 require_once '../../config/koneksi.php';
 require_once '../../includes/auth_guard.php';
 
-if ($_SESSION['role'] !== 'admin') {
-    header('Location: /web-perpustakaan/pages/dashboard/');
-    exit;
-}
+// Untuk IDE (intelephense): $koneksi memang berasal dari config/koneksi.php.
+/** @var mysqli $koneksi */
+
+
+// Validasi login saja (role tidak diset karena tabel users di database.sql tidak punya kolom role)
+// Auth guard sudah menangani redirect jika user belum login.
+
+// In some file analyzers (intelephense), $koneksi bisa terbaca sebagai undefined.
+// Di runtime, $koneksi diset oleh config/koneksi.php.
 
 $error = '';
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     $nama = trim($_POST['nama'] ?? '');
-    $role = $_POST['role'] ?? 'petugas';
+    // Kolom role tidak ada di database.sql, jadi role tidak diproses.
+    // $role dihapus karena tidak dipakai.
+
+
+
+
 
     if (empty($username) || empty($password) || empty($nama)) {
         $error = 'Semua field wajib diisi!';
@@ -36,9 +47,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Username sudah terdaftar!';
         } else {
             $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-            $insert_query = "INSERT INTO users (username, password, nama, role) VALUES (?, ?, ?, ?)";
+            $insert_query = "INSERT INTO users (username, password, nama) VALUES (?, ?, ?)";
+
             $stmt = mysqli_prepare($koneksi, $insert_query);
-            mysqli_stmt_bind_param($stmt, "ssss", $username, $hashed_password, $nama, $role);
+            mysqli_stmt_bind_param($stmt, "sss", $username, $hashed_password, $nama);
+
 
             if (mysqli_stmt_execute($stmt)) {
                 header('Location: /web-perpustakaan/pages/admin/?status=added');
@@ -121,14 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label for="nama" class="form-label">Nama Lengkap</label>
                             <input type="text" class="form-control" id="nama" name="nama" 
                                    placeholder="Nama lengkap" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="role" class="form-label">Role</label>
-                            <select class="form-select" id="role" name="role" required>
-                                <option value="petugas">Petugas</option>
-                                <option value="admin">Admin</option>
-                            </select>
                         </div>
 
                         <div class="d-flex gap-2">

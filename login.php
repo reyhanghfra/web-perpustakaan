@@ -20,18 +20,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($username === '' || $password === '') {
     $error = 'Username dan password wajib diisi.';
   } else {
-    $sql = "SELECT id_user, username, password, nama, role FROM users WHERE username = '$username' LIMIT 1";
-    $result = mysqli_query($koneksi, $sql);
+    // Kolom role tidak ada di database.sql (tabel users). Jadi cukup ambil field yang tersedia.
+    $sql = "SELECT id_user, username, password, nama FROM users WHERE username = ? LIMIT 1";
+    $stmt = mysqli_prepare($koneksi, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
     if ($result && mysqli_num_rows($result) === 1) {
       $user = mysqli_fetch_assoc($result);
+
 
       if (password_verify($password, $user['password'])) {
         $_SESSION['login']    = true;
         $_SESSION['id_user']  = $user['id_user'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['nama']     = $user['nama'];
-        $_SESSION['role']     = $user['role'];
+        // role kolom tidak ada pada tabel users di database.sql
+        // $_SESSION['role'] tetap tidak diset.
+
 
         header('Location: /web-perpustakaan/pages/dashboard/');
         exit;

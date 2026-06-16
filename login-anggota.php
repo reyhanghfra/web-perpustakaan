@@ -20,8 +20,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   if ($username === '' || $password === '') {
     $error = 'Username dan password wajib diisi.';
   } else {
-    $sql = "SELECT id_anggota, username, password, nama FROM anggota WHERE username = '$username' LIMIT 1";
-    $result = mysqli_query($koneksi, $sql);
+    $sql = "SELECT id_anggota, username, password, nama FROM anggota WHERE username = ? LIMIT 1";
+    $stmt = mysqli_prepare($koneksi, $sql);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
 
     if ($result && mysqli_num_rows($result) === 1) {
       $anggota = mysqli_fetch_assoc($result);

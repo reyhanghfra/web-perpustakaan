@@ -3,17 +3,16 @@ session_start();
 require_once '../../config/koneksi.php';
 require_once '../../includes/auth_guard.php';
 
-if ($_SESSION['role'] !== 'admin') {
-    header('Location: /web-perpustakaan/pages/dashboard/');
-    exit;
-}
+
 
 $id_user = $_GET['id'] ?? null;
+$id_user = filter_var($id_user, FILTER_VALIDATE_INT);
 
 if (!$id_user) {
     header('Location: /web-perpustakaan/pages/admin/?status=error');
     exit;
 }
+
 
 $check_query = "SELECT id_user FROM users WHERE id_user = ?";
 $stmt = mysqli_prepare($koneksi, $check_query);

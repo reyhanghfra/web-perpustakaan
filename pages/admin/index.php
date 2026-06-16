@@ -1,14 +1,37 @@
 <?php
 session_start();
-require_once '../../config/koneksi.php';
-require_once '../../includes/auth_guard.php';
+require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../includes/auth_guard.php';
+
+
+// In some file analyzers (intelephense), $koneksi bisa terbaca sebagai undefined.
+// Di runtime, $koneksi diset oleh config/koneksi.php.
+
 
 if (!isset($_SESSION['id_user'])) {
+
     header('Location: /web-perpustakaan/login.php');
     exit;
 }
-$query = "SELECT id_user, username, nama, role, created_at FROM users ORDER BY created_at DESC";
+// Kolom role & created_at tidak ada pada database.sql (users hanya: id_user, username, password, nama, created_at)
+// role tidak ada, jadi tampilkan tanpa role. created_at tetap tersedia.
+
+$search = trim($_GET['search'] ?? '');
+
+// Search: nama atau username
+if ($search !== '') {
+    $s = mysqli_real_escape_string($koneksi, $search);
+    $query = "SELECT id_user, username, nama, created_at FROM users
+              WHERE nama LIKE '%$s%' OR username LIKE '%$s%'
+              ORDER BY created_at DESC";
+} else {
+    $query = "SELECT id_user, username, nama, created_at FROM users ORDER BY created_at DESC";
+}
+
 $result = mysqli_query($koneksi, $query);
+
+
+
 $staff_list = [];
 
 if ($result) {
@@ -16,6 +39,10 @@ if ($result) {
         $staff_list[] = $row;
     }
 }
+
+
+
+
 
 $message = '';
 $message_type = '';
@@ -93,65 +120,58 @@ if (isset($_GET['status'])) {
                 </div>
             <?php endif; ?>
 
-            <div class="d-flex justify-content-between align-items-center page-title">
-                <h2>Admin/Staff</h2>
-                <a href="tambah.php" class="btn-add">
-                    <i class="fas fa-plus"></i> Tambah Staff
-                </a>
+            <div class="page-title">
+                <h2 class="mb-3">Data Admin</h2>
+                    <div class="mb-3">
+                    <form method="GET" action="">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control" placeholder="Cari nama atau username..." value="<?= htmlspecialchars($search ?? '') ?>">
+                        <button class="btn btn-warning text-white" type="submit">Cari</button>
+                    </div>
+                    </form>
+                </div>
+
             </div>
 
             <div class="card">
                 <div class="card-body">
-                    <?php if (count($staff_list) > 0): ?>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th width="5%">#</th>
-                                        <th width="25%">Username</th>
-                                        <th width="30%">Nama</th>
-                                        <th width="15%">Role</th>
-                                        <th width="15%">Terdaftar</th>
-                                        <th width="10%">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php 
-                                    $no = 1;
-                                    foreach ($staff_list as $staff): 
-                                    ?>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama</th>
+                                    <th>Username</th>
+                                    <th>Dibuat</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (count($staff_list) > 0): ?>
+                                    <?php foreach ($staff_list as $staff): ?>
                                         <tr>
-                                            <td><?php echo $no++; ?></td>
-                                            <td><code><?php echo htmlspecialchars($staff['username']); ?></code></td>
-                                            <td><?php echo htmlspecialchars($staff['nama']); ?></td>
+                                            <td><?= (int)$staff['id_user']; ?></td>
+                                            <td><?= htmlspecialchars($staff['nama']); ?></td>
+                                            <td><code><?= htmlspecialchars($staff['username']); ?></code></td>
+                                            <td><small><?= htmlspecialchars($staff['created_at']); ?></small></td>
                                             <td>
-                                                <span class="badge badge-<?php echo strtolower($staff['role']); ?>">
-                                                    <?php echo ucfirst($staff['role']); ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <small><?php echo date('d M Y', strtotime($staff['created_at'])); ?></small>
-                                            </td>
-                                            <td>
-                                                <a href="edit.php?id=<?php echo $staff['id_user']; ?>" 
-                                                   class="btn btn-sm btn-warning">Edit</a>
-                                                <a href="hapus.php?id=<?php echo $staff['id_user']; ?>" 
-                                                   class="btn btn-sm btn-danger"
-                                                   onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+                                                <a href="edit.php?id=<?= (int)$staff['id_user']; ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                <a href="hapus.php?id=<?= (int)$staff['id_user']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    <?php else: ?>
-                        <p class="text-center text-muted py-5">Belum ada data staff</p>
-                    <?php endif; ?>
-                </div>
-                <div class="card-footer text-muted">
-                    <small>Total: <?php echo count($staff_list); ?> staff</small>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-5">Belum ada data admin</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 

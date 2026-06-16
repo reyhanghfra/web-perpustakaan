@@ -2,10 +2,9 @@
 require_once __DIR__ . '/../../config/koneksi.php';
 
 $cek_peminjaman = mysqli_query($koneksi, "SHOW COLUMNS FROM peminjaman");
-$kolom_buku = 'id_buku';
 $kolom_anggota = 'id_anggota';
+$kolom_buku = null; // id_buku tidak ada pada tabel peminjaman (hanya di detail_peminjaman)
 while ($k = mysqli_fetch_assoc($cek_peminjaman)) {
-    if ($k['Field'] == 'kode_buku') $kolom_buku = 'kode_buku';
     if ($k['Field'] == 'id_user') $kolom_anggota = 'id_user';
 }
 $cek_anggota = mysqli_query($koneksi, "SHOW COLUMNS FROM anggota");
@@ -18,6 +17,7 @@ $pk_buku = 'id_buku';
 while ($b = mysqli_fetch_assoc($cek_buku)) {
     if ($b['Field'] == 'kode_buku') $pk_buku = 'kode_buku';
 }
+
 
 if (isset($_POST['proses_booking'])) {
     $kode_booking = mysqli_real_escape_string($koneksi, $_POST['kode_booking']);
