@@ -131,6 +131,156 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     }
   </script>
+    <!-- ===== MODAL DAFTAR ANGGOTA ===== -->
+  <div class="modal fade" id="modalDaftar" tabindex="-1" aria-labelledby="modalDaftarLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow">
+
+        <div class="modal-header border-0 pb-0">
+          <div class="text-center w-100">
+            <div class="login-logo mx-auto mb-2" style="width:56px;height:56px;font-size:1.5rem;">
+              <i class="bi bi-person-plus"></i>
+            </div>
+            <h5 class="modal-title fw-bold" id="modalDaftarLabel">Daftar Anggota</h5>
+            <p class="text-muted small mb-0">Buat akun untuk mengakses layanan perpustakaan</p>
+          </div>
+          <button type="button" class="btn-close position-absolute top-0 end-0 m-3"
+                  data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+
+        <div class="modal-body px-4 pt-3">
+
+          <!-- Alert error daftar -->
+          <div id="alertDaftarError" class="alert alert-danger d-none d-flex align-items-center gap-2">
+            <i class="bi bi-exclamation-circle-fill flex-shrink-0"></i>
+            <span id="pesanErrorDaftar"></span>
+          </div>
+
+          <!-- Alert sukses daftar -->
+          <div id="alertDaftarSuccess" class="alert alert-success d-none d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle-fill flex-shrink-0"></i>
+            <span id="pesanSuccessDaftar"></span>
+          </div>
+
+          <form id="formDaftar">
+            <!-- Nama Lengkap -->
+            <div class="mb-3">
+              <label for="daftar_nama" class="form-label">Nama Lengkap</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person"></i></span>
+                <input type="text" id="daftar_nama" name="nama" class="form-control"
+                       placeholder="Masukkan nama lengkap" required>
+              </div>
+              <div class="form-text">Nama ini digunakan sebagai username saat login.</div>
+            </div>
+
+            <!-- No HP -->
+            <div class="mb-3">
+              <label for="daftar_no_hp" class="form-label">Nomor HP / WhatsApp</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                <input type="text" id="daftar_no_hp" name="no_hp" class="form-control"
+                       placeholder="Contoh: 081234567890" maxlength="15" required>
+              </div>
+              <div class="form-text">Digunakan untuk notifikasi booking via WhatsApp.</div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="daftar_password" class="form-label">Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                <input type="password" id="daftar_password" name="password" class="form-control"
+                       placeholder="Minimal 6 karakter" required>
+                <button class="btn btn-outline-secondary" type="button"
+                        onclick="togglePassModal('daftar_password','eye_modal1')">
+                  <i class="bi bi-eye" id="eye_modal1"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Konfirmasi Password -->
+            <div class="mb-4">
+              <label for="daftar_konfirm" class="form-label">Konfirmasi Password</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                <input type="password" id="daftar_konfirm" name="konfirmasi_password"
+                       class="form-control" placeholder="Ulangi password" required>
+                <button class="btn btn-outline-secondary" type="button"
+                        onclick="togglePassModal('daftar_konfirm','eye_modal2')">
+                  <i class="bi bi-eye" id="eye_modal2"></i>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100" id="btnSubmitDaftar">
+              <i class="bi bi-person-check me-1"></i> Daftar Sekarang
+            </button>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ===== END MODAL ===== -->
+
+  <script>
+    // Toggle show/hide password di modal
+    function togglePassModal(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon  = document.getElementById(iconId);
+      input.type  = input.type === 'password' ? 'text' : 'password';
+      icon.className = input.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+    }
+
+    // Submit form daftar via AJAX
+    document.getElementById('formDaftar').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const btn        = document.getElementById('btnSubmitDaftar');
+      const alertError = document.getElementById('alertDaftarError');
+      const alertOk    = document.getElementById('alertDaftarSuccess');
+      const pesanError = document.getElementById('pesanErrorDaftar');
+      const pesanOk    = document.getElementById('pesanSuccessDaftar');
+
+      // Reset alert
+      alertError.classList.add('d-none');
+      alertOk.classList.add('d-none');
+
+      // Loading state
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
+
+      const formData = new FormData(this);
+
+      fetch('/perpustakaan/proses_daftar.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-person-check me-1"></i> Daftar Sekarang';
+
+        if (data.status === 'success') {
+          // Tampilkan sukses, reset form
+          alertOk.classList.remove('d-none');
+          pesanOk.textContent = data.pesan;
+          document.getElementById('formDaftar').reset();
+        } else {
+          // Tampilkan error
+          alertError.classList.remove('d-none');
+          pesanError.textContent = data.pesan;
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-person-check me-1"></i> Daftar Sekarang';
+        alertError.classList.remove('d-none');
+        pesanError.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
+      });
+    });
+  </script>
 </body>
 
 </html>
