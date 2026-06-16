@@ -1,0 +1,14 @@
+# IDE and System files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Database dumps (optional: keep your main database.sql tracked, but ignore any automated local backups)
+*.bak
+*.sql.gz
