@@ -10,9 +10,72 @@ if (!isset($_SESSION['anggota_login']) || $_SESSION['anggota_login'] !== true) {
 }
 
 require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../includes/whatsapp.php';
 
 $id_anggota = $_SESSION['anggota_id'];
 $nama       = $_SESSION['anggota_nama'];
+
+// ===== Proses Form Booking Buku (oleh anggota sendiri) =====
+$booking_error   = '';
+$booking_success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_buku'])) {
+    $id_buku_booking = intval($_POST['id_buku'] ?? 0);
+
+    if ($id_buku_booking === 0) {
+        $booking_error = 'Pilih buku terlebih dahulu.';
+    } else {
+        // Cek stok buku
+        $cek_stok = mysqli_fetch_assoc(mysqli_query($koneksi,
+            "SELECT stok, judul FROM buku WHERE id_buku = $id_buku_booking"));
+
+        if (!$cek_stok || $cek_stok['stok'] < 1) {
+            $booking_error = 'Stok buku tidak tersedia.';
+        } else {
+            // Generate kode booking unik: BK-YYYYMMDD + 4 digit random
+            $kode_baru = 'BK-' . date('Ymd') . str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+
+            $tgl_booking = date('Y-m-d');
+            $tgl_expired = date('Y-m-d', strtotime('+3 days')); // booking berlaku 3 hari
+
+            $sql_insert = "INSERT INTO booking
+                            (kode_booking, id_anggota, id_buku, tanggal_booking, tanggal_expired, status)
+                           VALUES
+                            ('$kode_baru', $id_anggota, $id_buku_booking, '$tgl_booking', '$tgl_expired', 'Booking')";
+
+            if (mysqli_query($koneksi, $sql_insert)) {
+                // Ambil no_hp anggota untuk kirim WA
+                $data_anggota = mysqli_fetch_assoc(mysqli_query($koneksi,
+                    "SELECT nama, no_hp FROM anggota WHERE id_anggota = $id_anggota"));
+
+                $nama_buku       = htmlspecialchars($cek_stok['judul']);
+                $nama_anggota_wa = htmlspecialchars($data_anggota['nama']);
+
+                // Susun pesan WhatsApp
+                $pesan = "📚 *PERPUSTAKAAN MINI*\n\n";
+                $pesan .= "Halo, *$nama_anggota_wa*! 👋\n\n";
+                $pesan .= "Booking buku kamu berhasil dibuat.\n\n";
+                $pesan .= "📖 Buku     : *$nama_buku*\n";
+                $pesan .= "🔑 Kode     : *$kode_baru*\n";
+                $pesan .= "📅 Booking  : " . date('d-m-Y') . "\n";
+                $pesan .= "⏳ Berlaku  : s/d " . date('d-m-Y', strtotime('+3 days')) . "\n\n";
+                $pesan .= "Tunjukkan kode ini ke petugas perpustakaan untuk mengambil buku.\n";
+                $pesan .= "Terima kasih! 🙏";
+
+                // Kirim WhatsApp
+                kirimWhatsApp($data_anggota['no_hp'], $pesan);
+
+                $booking_success = "Booking berhasil! Kode <strong>$kode_baru</strong> telah dikirim ke WhatsApp kamu.";
+            } else {
+                $booking_error = 'Gagal menyimpan booking: ' . mysqli_error($koneksi);
+            }
+        }
+    }
+}
+
+// List buku tersedia untuk dropdown booking
+$list_buku_booking = mysqli_query($koneksi,
+    "SELECT id_buku, judul, stok FROM buku WHERE stok > 0 ORDER BY judul ASC");
 
 // Stat cards
 $total_dipinjam = mysqli_fetch_row(mysqli_query($koneksi,
@@ -123,6 +186,12 @@ $riwayat = mysqli_query($koneksi,
 
     <div class="sidebar-section-label mt-3">TRANSAKSI SAYA</div>
 
+    <a href="#form-booking" class="sidebar-link"
+       onclick="scrollTo('form-booking')">
+      <i class="bi bi-bookmark-plus"></i>
+      <span>Booking Buku</span>
+    </a>
+
     <a href="#tabel-pinjam" class="sidebar-link"
        onclick="scrollTo('tabel-pinjam')">
       <i class="bi bi-arrow-left-right"></i>
@@ -161,6 +230,49 @@ $riwayat = mysqli_query($koneksi,
       <div class="page-header">
         <h1><i class="bi bi-speedometer2 me-2 text-primary"></i>Dashboard Anggota</h1>
         <p>Selamat datang, <strong><?= htmlspecialchars($nama) ?></strong>! Berikut ringkasan aktivitas perpustakaan kamu.</p>
+      </div>
+
+      <!-- Form Booking Buku -->
+      <div class="card mb-4" id="form-booking">
+        <div class="card-header d-flex align-items-center gap-2">
+          <i class="bi bi-bookmark-plus text-primary"></i>
+          Form Booking Buku
+        </div>
+        <div class="card-body p-4">
+
+          <?php if ($booking_error): ?>
+            <div class="alert alert-danger d-flex align-items-center gap-2">
+              <i class="bi bi-exclamation-circle-fill"></i> <?= $booking_error ?>
+            </div>
+          <?php endif; ?>
+
+          <?php if ($booking_success): ?>
+            <div class="alert alert-success d-flex align-items-center gap-2">
+              <i class="bi bi-check-circle-fill"></i> <?= $booking_success ?>
+            </div>
+          <?php endif; ?>
+
+          <p class="text-muted mb-3">Pilih buku yang ingin kamu booking. Kode booking akan dikirim ke WhatsApp kamu.</p>
+
+          <form method="POST" action="#form-booking" class="row g-3 align-items-end">
+            <div class="col-12 col-md-8">
+              <label for="id_buku" class="form-label">Buku yang Dibooking</label>
+              <select id="id_buku" name="id_buku" class="form-select" required>
+                <option value="" disabled selected>-- Pilih Buku --</option>
+                <?php while ($b = mysqli_fetch_assoc($list_buku_booking)): ?>
+                  <option value="<?= $b['id_buku'] ?>">
+                    <?= htmlspecialchars($b['judul']) ?> (Stok: <?= $b['stok'] ?>)
+                  </option>
+                <?php endwhile; ?>
+              </select>
+            </div>
+            <div class="col-12 col-md-4">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-send me-1"></i> Buat Booking
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
       <!-- Stat cards -->
