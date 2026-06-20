@@ -3,24 +3,19 @@ require_once __DIR__ . '/../../config/koneksi.php';
 
 $cek_peminjaman = mysqli_query($koneksi, "SHOW COLUMNS FROM peminjaman");
 $kolom_anggota = 'id_anggota';
-<<<<<<< HEAD
-$kolom_buku = 'id_buku'; // FIX: id_buku ada di tabel peminjaman
+$kolom_buku = 'id_buku';
 while ($k = mysqli_fetch_assoc($cek_peminjaman)) {
-    if ($k['Field'] == 'id_user') $kolom_anggota = 'id_user';
-    if ($k['Field'] == 'id_buku') $kolom_buku = 'id_buku';
-=======
-$kolom_buku = 'id_buku'; 
-
-while ($k = mysqli_fetch_assoc($cek_peminjaman)) {
-    if ($k['Field'] == 'id_user') $kolom_anggota = 'id_user';
->>>>>>> 29dededdfe97b4ac3bbfec56c8d49a9ff80224cb
-    if ($k['Field'] == 'kode_buku') $kolom_buku = 'kode_buku';
+    if ($k['Field'] == 'id_user')   $kolom_anggota = 'id_user';
+    if ($k['Field'] == 'id_buku')   $kolom_buku    = 'id_buku';
+    if ($k['Field'] == 'kode_buku') $kolom_buku    = 'kode_buku';
 }
+
 $cek_anggota = mysqli_query($koneksi, "SHOW COLUMNS FROM anggota");
 $pk_anggota = 'id_anggota';
 while ($a = mysqli_fetch_assoc($cek_anggota)) {
     if ($a['Field'] == 'id_user') $pk_anggota = 'id_user';
 }
+
 $cek_buku = mysqli_query($koneksi, "SHOW COLUMNS FROM buku");
 $pk_buku = 'id_buku';
 while ($b = mysqli_fetch_assoc($cek_buku)) {
@@ -33,8 +28,8 @@ if (isset($_POST['proses_booking'])) {
     if (mysqli_num_rows($cek_booking) > 0) {
         $data_b = mysqli_fetch_assoc($cek_booking);
         $val_anggota = isset($data_b[$kolom_anggota]) ? $data_b[$kolom_anggota] : (isset($data_b['id_anggota']) ? $data_b['id_anggota'] : $data_b['id_user']);
-        $val_buku = isset($data_b[$kolom_buku]) ? $data_b[$kolom_buku] : (isset($data_b['id_buku']) ? $data_b['id_buku'] : $data_b['kode_buku']);
-        $tgl_pinjam = date('Y-m-d');
+        $val_buku    = isset($data_b[$kolom_buku])    ? $data_b[$kolom_buku]    : (isset($data_b['id_buku'])    ? $data_b['id_buku']    : $data_b['kode_buku']);
+        $tgl_pinjam  = date('Y-m-d');
         $tgl_kembali = date('Y-m-d', strtotime('+7 days'));
         $insert_pinjam = mysqli_query($koneksi, "INSERT INTO peminjaman (kode_booking, $kolom_anggota, $kolom_buku, tanggal_pinjam, tanggal_kembali, status) VALUES ('$kode_booking', '$val_anggota', '$val_buku', '$tgl_pinjam', '$tgl_kembali', 'Diambil')");
         if ($insert_pinjam) {
@@ -74,7 +69,7 @@ require_once __DIR__ . '/../../includes/header.php';
   <?php require_once __DIR__ . '/../../includes/sidebar.php'; ?>
   <div class="main-wrapper flex-grow-1">
     <?php require_once __DIR__ . '/../../includes/navbar.php'; ?>
-    
+
     <div class="pt-2 px-4">
       <div class="page-header mb-4">
         <h1><i class="bi bi-arrow-left-right me-2 text-warning"></i>Peminjaman</h1>
@@ -135,37 +130,41 @@ require_once __DIR__ . '/../../includes/header.php';
             </thead>
             <tbody>
               <?php
-              $no = 1;
-              $query = "SELECT p.*, a.nama AS nama_anggota, b.judul AS judul_buku 
+              $no    = 1;
+              $query = "SELECT p.*, a.nama AS nama_anggota, b.judul AS judul_buku
                         FROM peminjaman p
                         LEFT JOIN anggota a ON p.$kolom_anggota = a.$pk_anggota
-                        LEFT JOIN buku b ON p.$kolom_buku = b.$pk_buku
+                        LEFT JOIN buku b    ON p.$kolom_buku    = b.$pk_buku
                         $where_search
                         ORDER BY p.id_peminjaman DESC";
               $tampil = mysqli_query($koneksi, $query);
               if ($tampil && mysqli_num_rows($tampil) > 0):
                 while ($row = mysqli_fetch_assoc($tampil)): ?>
                 <tr>
-                  <td><?= $no++; ?></td>
-                  <td><strong><?= $row['kode_booking']; ?></strong></td>
-                  <td><?= $row['nama_anggota'] ?? '<span class="text-muted">Umum/Anonim</span>'; ?></td>
-                  <td><?= $row['judul_buku'] ?? '<span class="text-muted">Buku tidak ditemukan</span>'; ?></td>
-                  <td><?= date('d-m-Y', strtotime($row['tanggal_pinjam'])); ?></td>
-                  <td><?= date('d-m-Y', strtotime($row['tanggal_kembali'])); ?></td>
+                  <td><?= $no++ ?></td>
+                  <td><strong><?= htmlspecialchars($row['kode_booking']) ?></strong></td>
+                  <td><?= $row['nama_anggota'] ? htmlspecialchars($row['nama_anggota']) : '<span class="text-muted">Umum/Anonim</span>' ?></td>
+                  <td><?= $row['judul_buku']   ? htmlspecialchars($row['judul_buku'])   : '<span class="text-muted">Buku tidak ditemukan</span>' ?></td>
+                  <td><?= date('d-m-Y', strtotime($row['tanggal_pinjam'])) ?></td>
+                  <td><?= date('d-m-Y', strtotime($row['tanggal_kembali'])) ?></td>
                   <td>
-                    <?php if($row['status'] == 'Diambil' || $row['status'] == 'Sedang Dipinjam'): ?>
+                    <?php if ($row['status'] == 'Diambil' || $row['status'] == 'Sedang Dipinjam'): ?>
                       <span class="badge bg-warning text-dark">Sedang Dipinjam</span>
                     <?php else: ?>
                       <span class="badge bg-success">Sudah Kembali</span>
                     <?php endif; ?>
                   </td>
                   <td>
-                    <?php if($row['status'] == 'Diambil' || $row['status'] == 'Sedang Dipinjam'): ?>
-                      <a href="index.php?aksi=kembali&id=<?= $row['id_peminjaman']; ?>" class="btn btn-sm btn-primary me-1" onclick="return confirm('Proses pengembalian buku ini?')">
+                    <?php if ($row['status'] == 'Diambil' || $row['status'] == 'Sedang Dipinjam'): ?>
+                      <a href="index.php?aksi=kembali&id=<?= $row['id_peminjaman'] ?>"
+                         class="btn btn-sm btn-primary me-1"
+                         onclick="return confirm('Proses pengembalian buku ini?')">
                         <i class="bi bi-arrow-counterclockwise"></i> Kembali
                       </a>
                     <?php endif; ?>
-                    <a href="index.php?aksi=hapus&id=<?= $row['id_peminjaman']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus transaksi ini?')">
+                    <a href="index.php?aksi=hapus&id=<?= $row['id_peminjaman'] ?>"
+                       class="btn btn-sm btn-danger"
+                       onclick="return confirm('Hapus transaksi ini?')">
                       <i class="bi bi-trash"></i> Hapus
                     </a>
                   </td>
