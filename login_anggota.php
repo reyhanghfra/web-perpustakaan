@@ -5,8 +5,13 @@
 session_start();
 
 if (isset($_SESSION['anggota_login']) && $_SESSION['anggota_login'] === true) {
-  header('Location: /web-perpustakaan/anggota/dashboard.php');
-  exit;
+    $referrer = $_SERVER['HTTP_REFERER'] ?? '';
+    $dari_login_petugas = strpos($referrer, 'login.php') !== false;
+
+    if (!$dari_login_petugas) {
+        header('Location: /web-perpustakaan/pages/anggota_area/');
+        exit;
+    }
 }
 
 require_once __DIR__ . '/config/koneksi.php';
@@ -35,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['anggota_username'] = $anggota['username'];
         $_SESSION['anggota_nama']     = $anggota['nama'];
 
-        header('Location: /web-perpustakaan/anggota/dashboard.php');
+        header('Location: /web-perpustakaan/pages/anggota_area/');
         exit;
       } else {
         $error = 'Username atau password salah.';

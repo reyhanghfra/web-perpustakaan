@@ -46,6 +46,12 @@
             <i class="bi bi-arrow-left-right me-1"></i> Peminjaman
           </a>
         </li>
+                <li class="nav-item">
+          <a class="nav-link <?= (strpos($_SERVER['REQUEST_URI'], '/admin') !== false) ? 'active' : '' ?>"
+             href="/web-perpustakaan/pages/admin/">
+            <i class="bi bi-shield-lock me-1"></i> Admin
+          </a>
+        </li>
       </ul>
 
       <!-- User info + Logout -->

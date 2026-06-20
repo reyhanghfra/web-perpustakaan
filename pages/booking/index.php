@@ -90,6 +90,28 @@ require_once __DIR__ . '/../../includes/header.php';
     <?php require_once __DIR__ . '/../../includes/navbar.php'; ?>
     <div class="pt-2 px-4">
 
+<?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success alert-auto-close d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill"></i>
+          Booking berhasil diproses! Buku sudah tercatat sebagai dipinjam dan notifikasi WhatsApp telah dikirim.
+        </div>
+      <?php endif; ?>
+
+      <?php if (isset($_GET['error'])): ?>
+        <div class="alert alert-danger alert-auto-close d-flex align-items-center gap-2">
+          <i class="bi bi-exclamation-circle-fill"></i>
+          <?php
+          $err = $_GET['error'];
+          echo match($err) {
+            'notfound' => 'Booking tidak ditemukan atau sudah diproses.',
+            'stok'     => 'Stok buku sudah habis, tidak bisa diproses.',
+            'pinjam'   => 'Gagal membuat data peminjaman.',
+            default    => 'Terjadi kesalahan.'
+          };
+          ?>
+        </div>
+      <?php endif; ?>
+
       <div class="page-header mb-4">
         <h1><i class="bi bi-bookmark-check me-2 text-primary"></i>Booking Buku</h1>
         <p>Buat booking buku untuk anggota. Kode booking otomatis dikirim ke WhatsApp anggota.</p>
@@ -160,6 +182,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 <th>Tgl Booking</th>
                 <th>Berlaku s/d</th>
                 <th>Status</th>
+                <th>Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -187,6 +210,18 @@ require_once __DIR__ . '/../../includes/header.php';
                   ?>
                   <span class="badge <?= $badge ?>"><?= $row['status'] ?></span>
                 </td>
+                <td>
+                  <?php if ($row['status'] === 'Booking'): ?>
+                    <button class="btn btn-sm btn-success"
+                            onclick="konfirmasiProses('<?= $row['id_booking'] ?>', '<?= htmlspecialchars($row['kode_booking']) ?>', '<?= htmlspecialchars($row['nama_anggota']) ?>', '<?= htmlspecialchars($row['judul_buku']) ?>')">
+                      <i class="bi bi-check-circle me-1"></i> Proses
+                    </button>
+                  <?php elseif ($row['status'] === 'Batal'): ?>
+                    <span class="text-muted small">—</span>
+                  <?php else: ?>
+                    <span class="text-muted small">Selesai</span>
+                  <?php endif; ?>
+                </td>
               </tr>
               <?php
                 endwhile;
@@ -203,4 +238,63 @@ require_once __DIR__ . '/../../includes/header.php';
   </div>
 </div>
 
+<!-- Modal Konfirmasi Proses Booking -->
+<div class="modal fade" id="modalProses" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-check-circle text-success me-2"></i>Proses Booking
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body px-4">
+        <p class="mb-3">Konfirmasi peminjaman buku berikut:</p>
+        <table class="table table-borderless table-sm mb-0">
+          <tr>
+            <td class="text-muted" style="width:130px">Kode Booking</td>
+            <td><strong id="modal_kode"></strong></td>
+          </tr>
+          <tr>
+            <td class="text-muted">Anggota</td>
+            <td id="modal_anggota"></td>
+          </tr>
+          <tr>
+            <td class="text-muted">Judul Buku</td>
+            <td id="modal_buku"></td>
+          </tr>
+          <tr>
+            <td class="text-muted">Tgl Pinjam</td>
+            <td><?= date('d-m-Y') ?></td>
+          </tr>
+          <tr>
+            <td class="text-muted">Batas Kembali</td>
+            <td><?= date('d-m-Y', strtotime('+7 days')) ?> <span class="text-muted small">(7 hari)</span></td>
+          </tr>
+        </table>
+      </div>
+      <div class="modal-footer border-0 gap-2">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Batal
+        </button>
+        <form method="POST" action="/web-perpustakaan/pages/booking/proses_booking.php" id="formProses">
+          <input type="hidden" name="id_booking" id="input_id_booking">
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check-circle me-1"></i> Ya, Proses Sekarang
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function konfirmasiProses(id, kode, anggota, buku) {
+  document.getElementById('modal_kode').textContent    = kode;
+  document.getElementById('modal_anggota').textContent = anggota;
+  document.getElementById('modal_buku').textContent    = buku;
+  document.getElementById('input_id_booking').value   = id;
+  new bootstrap.Modal(document.getElementById('modalProses')).show();
+}
+</script>
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

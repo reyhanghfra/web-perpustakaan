@@ -40,10 +40,6 @@ if ($result) {
     }
 }
 
-
-
-
-
 $message = '';
 $message_type = '';
 
@@ -121,7 +117,12 @@ if (isset($_GET['status'])) {
             <?php endif; ?>
 
             <div class="page-title">
-                <h2 class="mb-3">Data Admin</h2>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="mb-0">Data Admin</h2>
+                    <a href="tambah.php" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i> Tambah Admin
+                    </a>
+                </div>
                     <div class="mb-3">
                     <form method="GET" action="">
                     <div class="input-group">

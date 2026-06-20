@@ -44,6 +44,14 @@ $current = $_SERVER['REQUEST_URI'];
       <span>Peminjaman</span>
     </a>
 
+    <div class="sidebar-section-label mt-3">PENGATURAN</div>
+
+    <a href="/web-perpustakaan/pages/admin/"
+      class="sidebar-link <?= strpos($current, '/admin') !== false ? 'active' : '' ?>">
+      <i class="bi bi-shield-lock"></i>
+      <span>Kelola Admin</span>
+    </a>
+
     <div class="sidebar-section-label mt-3">AKUN</div>
 
     <a href="/web-perpustakaan/logout.php" class="sidebar-link text-danger-soft">
