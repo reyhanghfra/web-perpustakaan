@@ -73,9 +73,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_buku'])) {
     }
 }
 
-// List buku tersedia untuk dropdown booking
-$list_buku_booking = mysqli_query($koneksi,
-    "SELECT id_buku, judul, stok FROM buku WHERE stok > 0 ORDER BY judul ASC");
+// ===============================
+// KATEGORI & LIST BUKU
+// ===============================
+
+$list_kategori = mysqli_query(
+    $koneksi,
+    "SELECT * FROM kategori ORDER BY nama_kategori ASC"
+);
+
+$id_kategori = isset($_GET['kategori'])
+    ? (int)$_GET['kategori']
+    : 0;
+
+if ($id_kategori > 0)
+{
+    $list_buku_booking = mysqli_query(
+        $koneksi,
+        "SELECT *
+         FROM buku
+         WHERE stok > 0
+         AND id_kategori = '$id_kategori'
+         ORDER BY judul ASC"
+    );
+}
+else
+{
+    $list_buku_booking = mysqli_query(
+        $koneksi,
+        "SELECT *
+         FROM buku
+         WHERE stok > 0
+         ORDER BY judul ASC"
+    );
+}
 
 // Stat cards
 $total_dipinjam = mysqli_fetch_row(mysqli_query($koneksi,
@@ -254,24 +285,83 @@ $riwayat = mysqli_query($koneksi,
 
           <p class="text-muted mb-3">Pilih buku yang ingin kamu booking. Kode booking akan dikirim ke WhatsApp kamu.</p>
 
-          <form method="POST" action="#form-booking" class="row g-3 align-items-end">
-            <div class="col-12 col-md-8">
-              <label for="id_buku" class="form-label">Buku yang Dibooking</label>
-              <select id="id_buku" name="id_buku" class="form-select" required>
-                <option value="" disabled selected>-- Pilih Buku --</option>
-                <?php while ($b = mysqli_fetch_assoc($list_buku_booking)): ?>
-                  <option value="<?= $b['id_buku'] ?>">
-                    <?= htmlspecialchars($b['judul']) ?> (Stok: <?= $b['stok'] ?>)
-                  </option>
-                <?php endwhile; ?>
-              </select>
-            </div>
-            <div class="col-12 col-md-4">
-              <button type="submit" class="btn btn-primary w-100">
-                <i class="bi bi-send me-1"></i> Buat Booking
-              </button>
-            </div>
-          </form>
+          <!-- PILIH KATEGORI -->
+
+<form method="GET" class="mb-4">
+
+    <label class="form-label fw-semibold">
+        Pilih Kategori Buku
+    </label>
+
+    <select
+        name="kategori"
+        class="form-select"
+        onchange="this.form.submit()">
+
+        <option value="">
+            Semua Kategori
+        </option>
+
+        <?php while($k = mysqli_fetch_assoc($list_kategori)): ?>
+
+        <option
+            value="<?= $k['id_kategori'] ?>"
+            <?= ($id_kategori == $k['id_kategori']) ? 'selected' : '' ?>>
+
+            <?= htmlspecialchars($k['nama_kategori']) ?>
+
+        </option>
+
+        <?php endwhile; ?>
+
+    </select>
+
+</form>
+
+<!-- PILIH BUKU -->
+
+<form method="POST" action="#form-booking">
+
+    <div class="mb-3">
+
+        <label class="form-label fw-semibold">
+            Pilih Buku
+        </label>
+
+        <select
+            name="id_buku"
+            class="form-select"
+            required>
+
+            <option value="">
+                -- Pilih Buku --
+            </option>
+
+            <?php while($b = mysqli_fetch_assoc($list_buku_booking)): ?>
+
+            <option value="<?= $b['id_buku'] ?>">
+
+                <?= htmlspecialchars($b['judul']) ?>
+                (Stok: <?= $b['stok'] ?>)
+
+            </option>
+
+            <?php endwhile; ?>
+
+        </select>
+
+    </div>
+
+    <button
+        type="submit"
+        class="btn btn-primary">
+
+        <i class="bi bi-bookmark-plus me-1"></i>
+        Buat Booking
+
+    </button>
+
+</form>
         </div>
       </div>
 
