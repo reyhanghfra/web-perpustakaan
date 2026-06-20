@@ -1,7 +1,4 @@
 <?php
-/**
- * login-anggota.php — Halaman Login Anggota
- */
 session_start();
 
 if (isset($_SESSION['anggota_login']) && $_SESSION['anggota_login'] === true) {
@@ -9,7 +6,7 @@ if (isset($_SESSION['anggota_login']) && $_SESSION['anggota_login'] === true) {
     $dari_login_petugas = strpos($referrer, 'login.php') !== false;
 
     if (!$dari_login_petugas) {
-        header('Location: /web-perpustakaan/pages/anggota_area/');
+        header('Location: ./pages/anggota_area/');
         exit;
     }
 }
@@ -40,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['anggota_username'] = $anggota['username'];
         $_SESSION['anggota_nama']     = $anggota['nama'];
 
-        header('Location: /web-perpustakaan/pages/anggota_area/');
+        header('Location: ./pages/anggota_area/');
         exit;
       } else {
         $error = 'Username atau password salah.';
@@ -61,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web-perpustakaan/assets/css/style.css">
+  <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 
 <body class="login-page">
@@ -112,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 
     <p class="text-center mt-3 mb-0 small">
-      Login sebagai petugas? <a href="/web-perpustakaan/login.php">Klik di sini</a>
+      Login sebagai petugas? <a href="./login.php">Klik di sini</a>
     </p>
 
     <p class="text-center text-muted small mt-3 mb-0">
