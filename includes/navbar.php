@@ -35,6 +35,12 @@
           </a>
         </li>
         <li class="nav-item">
+  <a class="nav-link <?= (strpos($_SERVER['REQUEST_URI'], '/kategori') !== false) ? 'active' : '' ?>"
+     href="/web-perpustakaan/pages/kategori/">
+    <i class="bi bi-tags me-1"></i> Kategori
+  </a>
+</li>
+        <li class="nav-item">
           <a class="nav-link <?= (strpos($_SERVER['REQUEST_URI'], '/anggota') !== false) ? 'active' : '' ?>"
              href="/web-perpustakaan/pages/anggota/">
             <i class="bi bi-people me-1"></i> Anggota

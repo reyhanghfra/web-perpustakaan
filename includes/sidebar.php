@@ -24,6 +24,12 @@ $current = $_SERVER['REQUEST_URI'];
       <span>Data Buku</span>
     </a>
 
+    <a href="/web-perpustakaan/pages/kategori/"
+   class="sidebar-link <?= strpos($current, '/kategori') !== false ? 'active' : '' ?>">
+  <i class="bi bi-tags"></i>
+  <span>Data Kategori</span>
+</a>
+
     <a href="/web-perpustakaan/pages/anggota/"
       class="sidebar-link <?= strpos($current, '/anggota') !== false ? 'active' : '' ?>">
       <i class="bi bi-people"></i>
