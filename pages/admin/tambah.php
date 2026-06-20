@@ -1,7 +1,6 @@
 <?php
-session_start();
-require_once '../../config/koneksi.php';
-require_once '../../includes/auth_guard.php';
+require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../includes/auth_guard.php';
 
 // Untuk IDE (intelephense): $koneksi memang berasal dari config/koneksi.php.
 /** @var mysqli $koneksi */
@@ -62,90 +61,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+$page_title = 'Tambah Admin';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Staff - Perpustakaan Mini</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .form-container {
-            max-width: 500px;
-            margin: 30px auto;
-        }
-        .card {
-            border: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-        }
-        .btn-submit:hover {
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <div class="container-fluid">
-        <?php include '../../includes/navbar.php'; ?>
-        
-        <div class="container form-container">
-            <a href="index.php" style="text-decoration: none; color: #667eea;">← Kembali</a>
-            
-            <h2 class="mt-3 mb-4">Tambah Staff Baru</h2>
+<div class="d-flex">
+  <?php require_once __DIR__ . '/../../includes/sidebar.php'; ?>
+  <div class="main-wrapper flex-grow-1">
+    <?php require_once __DIR__ . '/../../includes/navbar.php'; ?>
 
-            <?php if ($error): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <?php echo htmlspecialchars($error); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
+    <div class="pt-2 px-4">
+      <div class="page-header mb-4">
+        <h1><i class="bi bi-person-plus me-2 text-primary"></i>Tambah Admin</h1>
+        <p>Tambahkan akun admin atau petugas baru.</p>
+      </div>
 
-            <div class="card">
-                <div class="card-body p-4">
-                    <form method="POST">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                   placeholder="Minimal 3 karakter" required>
-                        </div>
+      <div class="card shadow-sm border-0 mb-4" style="max-width: 600px;">
+        <div class="card-body p-4">
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" 
-                                   placeholder="Minimal 6 karakter" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label">Konfirmasi Password</label>
-                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" 
-                                   placeholder="Ulangi password" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="nama" class="form-label">Nama Lengkap</label>
-                            <input type="text" class="form-control" id="nama" name="nama" 
-                                   placeholder="Nama lengkap" required>
-                        </div>
-
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-submit">Simpan</button>
-                            <a href="index.php" class="btn btn-outline-secondary">Batal</a>
-                        </div>
-                    </form>
-                </div>
+          <?php if ($error): ?>
+            <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <?= htmlspecialchars($error) ?>
             </div>
-        </div>
-    </div>
+          <?php endif; ?>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+          <form method="POST">
+            <div class="mb-3">
+              <label for="username" class="form-label fw-semibold">Username</label>
+              <input type="text" class="form-control" id="username" name="username"
+                placeholder="Minimal 3 karakter" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label fw-semibold">Password</label>
+              <input type="password" class="form-control" id="password" name="password"
+                placeholder="Minimal 6 karakter" required>
+            </div>
+
+            <div class="mb-3">
+              <label for="confirm_password" class="form-label fw-semibold">Konfirmasi Password</label>
+              <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                placeholder="Ulangi password" required>
+            </div>
+
+            <div class="mb-4">
+              <label for="nama" class="form-label fw-semibold">Nama Lengkap</label>
+              <input type="text" class="form-control" id="nama" name="nama"
+                placeholder="Nama lengkap" required>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-save me-1"></i> Simpan
+              </button>
+              <a href="index.php" class="btn btn-outline-secondary">Batal</a>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

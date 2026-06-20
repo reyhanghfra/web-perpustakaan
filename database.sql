@@ -1,13 +1,12 @@
 -- ============================================================
 -- DATABASE: perpustakaan_mini
 -- Project UAS Pemrograman Web
--- FIX: Menambahkan kolom role pada tabel users,
---      tabel users_anggota, tabel booking,
---      dan menyesuaikan struktur tabel peminjaman
---      agar sesuai dengan seluruh file PHP.
+-- Versi FINAL - Semua tabel lengkap, data dummy siap pakai
 -- ============================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
 
 CREATE DATABASE IF NOT EXISTS perpustakaan_mini
   CHARACTER SET utf8mb4
@@ -27,7 +26,6 @@ DROP TABLE IF EXISTS users;
 
 -- ============================================================
 -- TABEL: users  (admin / petugas)
--- FIX: ditambahkan kolom `role` yang dipakai login.php baris 29
 -- ============================================================
 CREATE TABLE users (
   id_user    INT AUTO_INCREMENT PRIMARY KEY,
@@ -36,15 +34,15 @@ CREATE TABLE users (
   nama       VARCHAR(100) NOT NULL,
   role       ENUM('admin','petugas') NOT NULL DEFAULT 'petugas',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
 -- TABEL: kategori
 -- ============================================================
 CREATE TABLE kategori (
-  id_kategori    INT AUTO_INCREMENT PRIMARY KEY,
-  nama_kategori  VARCHAR(100) NOT NULL
-) ENGINE=InnoDB;
+  id_kategori   INT AUTO_INCREMENT PRIMARY KEY,
+  nama_kategori VARCHAR(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
 -- TABEL: buku
@@ -62,10 +60,10 @@ CREATE TABLE buku (
   CONSTRAINT fk_buku_kategori FOREIGN KEY (id_kategori)
     REFERENCES kategori(id_kategori)
     ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
--- TABEL: anggota  (data profil anggota)
+-- TABEL: anggota
 -- ============================================================
 CREATE TABLE anggota (
   id_anggota INT AUTO_INCREMENT PRIMARY KEY,
@@ -73,11 +71,10 @@ CREATE TABLE anggota (
   alamat     TEXT         NOT NULL,
   no_hp      VARCHAR(20)  NOT NULL UNIQUE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
 -- TABEL: users_anggota  (akun login untuk anggota)
--- FIX: tabel ini dipakai oleh login_anggota.php & daftar.php
 -- ============================================================
 CREATE TABLE users_anggota (
   id_users_anggota INT AUTO_INCREMENT PRIMARY KEY,
@@ -88,33 +85,30 @@ CREATE TABLE users_anggota (
   CONSTRAINT fk_users_anggota FOREIGN KEY (id_anggota)
     REFERENCES anggota(id_anggota)
     ON UPDATE CASCADE ON DELETE CASCADE
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
 -- TABEL: booking
--- FIX: tabel ini dipakai oleh pages/booking/index.php
 -- ============================================================
 CREATE TABLE booking (
-  id_booking       INT AUTO_INCREMENT PRIMARY KEY,
-  kode_booking     VARCHAR(30) NOT NULL UNIQUE,
-  id_anggota       INT         NOT NULL,
-  id_buku          INT         NOT NULL,
-  tanggal_booking  DATE        NOT NULL,
-  tanggal_expired  DATE        NOT NULL,
-  status           ENUM('Booking','Diambil','Dibatalkan') NOT NULL DEFAULT 'Booking',
-  created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  id_booking      INT AUTO_INCREMENT PRIMARY KEY,
+  kode_booking    VARCHAR(30) NOT NULL UNIQUE,
+  id_anggota      INT         NOT NULL,
+  id_buku         INT         NOT NULL,
+  tanggal_booking DATE        NOT NULL,
+  tanggal_expired DATE        NOT NULL,
+  status          ENUM('Booking','Diambil','Dibatalkan') NOT NULL DEFAULT 'Booking',
+  created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_booking_anggota FOREIGN KEY (id_anggota)
     REFERENCES anggota(id_anggota)
     ON UPDATE CASCADE ON DELETE RESTRICT,
   CONSTRAINT fk_booking_buku FOREIGN KEY (id_buku)
     REFERENCES buku(id_buku)
     ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================
 -- TABEL: peminjaman
--- FIX: kolom kode_booking, id_buku, tanggal_dikembalikan,
---      dan status ENUM disesuaikan dengan pages/peminjaman/index.php
 -- ============================================================
 CREATE TABLE peminjaman (
   id_peminjaman        INT AUTO_INCREMENT PRIMARY KEY,
@@ -132,13 +126,13 @@ CREATE TABLE peminjaman (
   CONSTRAINT fk_peminjaman_buku FOREIGN KEY (id_buku)
     REFERENCES buku(id_buku)
     ON UPDATE CASCADE ON DELETE RESTRICT
-) ENGINE=InnoDB;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- ============================================================
 -- DATA DUMMY: users
--- password = "admin123"
+-- password plain: "admin123"  (bcrypt hash)
 -- ============================================================
 INSERT INTO users (username, password, nama, role) VALUES
 ('admin',   '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator',        'admin'),
@@ -163,18 +157,18 @@ INSERT INTO kategori (nama_kategori) VALUES
 -- DATA DUMMY: buku
 -- ============================================================
 INSERT INTO buku (judul, penulis, penerbit, tahun, stok, id_kategori) VALUES
-('Laskar Pelangi',              'Andrea Hirata',         'Bentang Pustaka',    2005, 5, 1),
-('Bumi Manusia',                'Pramoedya Ananta Toer', 'Lentera Dipantara',  1980, 3, 1),
-('Algoritma dan Pemrograman',   'Rinaldi Munir',          'Informatika',        2016, 4, 3),
-('Dasar-Dasar Pemrograman Web', 'Betha Sidik',            'Informatika',        2019, 6, 3),
-('Harry Potter: Batu Bertuah',  'J.K. Rowling',           'Gramedia',           2000, 2, 1),
-('Fisika Dasar Jilid 1',        'Halliday & Resnick',     'Erlangga',           2014, 4, 5),
-('Sejarah Indonesia Modern',    'M.C. Ricklefs',          'Serambi',            2008, 3, 6),
-('Fiqih Islam Lengkap',         'Sulaiman Rasjid',        'Sinar Baru',         2015, 5, 7),
-('Doraemon Vol. 1',             'Fujiko F. Fujio',        'Elex Media',         2010, 7, 4),
-('Matematika Diskrit',          'Rinaldi Munir',           'Informatika',        2017, 3, 2),
-('Pemrograman PHP & MySQL',     'Budi Raharjo',            'Informatika',        2020, 5, 3),
-('Si Kancil dan Buaya',         'Folklore Indonesia',      'Erlangga',           2012, 8, 8);
+('Laskar Pelangi',              'Andrea Hirata',          'Bentang Pustaka',   2005, 5, 1),
+('Bumi Manusia',                'Pramoedya Ananta Toer',  'Lentera Dipantara', 1980, 3, 1),
+('Algoritma dan Pemrograman',   'Rinaldi Munir',           'Informatika',       2016, 4, 3),
+('Dasar-Dasar Pemrograman Web', 'Betha Sidik',             'Informatika',       2019, 6, 3),
+('Harry Potter: Batu Bertuah',  'J.K. Rowling',            'Gramedia',          2000, 2, 1),
+('Fisika Dasar Jilid 1',        'Halliday & Resnick',      'Erlangga',          2014, 4, 5),
+('Sejarah Indonesia Modern',    'M.C. Ricklefs',           'Serambi',           2008, 3, 6),
+('Fiqih Islam Lengkap',         'Sulaiman Rasjid',         'Sinar Baru',        2015, 5, 7),
+('Doraemon Vol. 1',             'Fujiko F. Fujio',         'Elex Media',        2010, 7, 4),
+('Matematika Diskrit',          'Rinaldi Munir',            'Informatika',       2017, 3, 2),
+('Pemrograman PHP & MySQL',     'Budi Raharjo',             'Informatika',       2020, 5, 3),
+('Si Kancil dan Buaya',         'Folklore Indonesia',       'Erlangga',          2012, 8, 8);
 
 -- ============================================================
 -- DATA DUMMY: anggota
@@ -195,8 +189,7 @@ INSERT INTO anggota (nama, alamat, no_hp) VALUES
 
 -- ============================================================
 -- DATA DUMMY: users_anggota
--- password = "anggota123"
--- username = nama lengkap (sesuai logika daftar.php)
+-- password plain: "anggota123"  (bcrypt hash)
 -- ============================================================
 INSERT INTO users_anggota (id_anggota, username, password) VALUES
 (1, 'Andi Saputra', '$2y$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh6y'),
@@ -217,3 +210,7 @@ INSERT INTO booking (kode_booking, id_anggota, id_buku, tanggal_booking, tanggal
 INSERT INTO peminjaman (kode_booking, id_anggota, id_buku, tanggal_pinjam, tanggal_kembali, tanggal_dikembalikan, status) VALUES
 ('BK-2026060101', 1, 3, '2026-06-02', '2026-06-16', NULL,         'Diambil'),
 (NULL,            2, 1, '2026-05-20', '2026-06-03', '2026-06-03', 'Kembali');
+
+-- ============================================================
+-- SELESAI - Import berhasil
+-- ============================================================

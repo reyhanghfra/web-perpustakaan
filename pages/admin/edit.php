@@ -1,7 +1,6 @@
 <?php
-session_start();
-require_once '../../config/koneksi.php';
-require_once '../../includes/auth_guard.php';
+require_once __DIR__ . '/../../config/koneksi.php';
+require_once __DIR__ . '/../../includes/auth_guard.php';
 
 // Validasi login saja (role tidak tersedia di database.sql dan tidak diset di login.php)
 
@@ -83,102 +82,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
+$page_title = 'Edit Admin';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="id">
+<div class="d-flex">
+  <?php require_once __DIR__ . '/../../includes/sidebar.php'; ?>
+  <div class="main-wrapper flex-grow-1">
+    <?php require_once __DIR__ . '/../../includes/navbar.php'; ?>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Staff - Perpustakaan Mini</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+    <div class="pt-2 px-4">
+      <div class="page-header mb-4">
+        <h1><i class="bi bi-person-gear me-2 text-primary"></i>Edit Admin</h1>
+        <p>Ubah data akun admin atau petugas.</p>
+      </div>
 
-        .form-container {
-            max-width: 500px;
-            margin: 30px auto;
-        }
+      <div class="card shadow-sm border-0 mb-4" style="max-width: 600px;">
+        <div class="card-header bg-primary text-white">Form Edit Admin</div>
+        <div class="card-body p-4">
 
-        .card {
-            border: none;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
+          <?php if ($error): ?>
+            <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              <?= htmlspecialchars($error) ?>
+            </div>
+          <?php endif; ?>
 
-        .btn-submit {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-        }
+          <?php if ($staff): ?>
+            <form method="POST">
+              <input type="hidden" name="id_user" value="<?= $staff['id_user'] ?>">
 
-        .btn-submit:hover {
-            color: white;
-        }
-    </style>
-</head>
+              <div class="mb-3">
+                <label for="username" class="form-label fw-semibold">Username</label>
+                <input type="text" class="form-control" id="username" name="username"
+                  required value="<?= htmlspecialchars($staff['username']) ?>">
+              </div>
 
-<body>
-    <div class="container-fluid">
-        <?php include '../../includes/navbar.php'; ?>
+              <div class="mb-3">
+                <label for="nama" class="form-label fw-semibold">Nama Lengkap</label>
+                <input type="text" class="form-control" id="nama" name="nama"
+                  required value="<?= htmlspecialchars($staff['nama']) ?>">
+              </div>
 
-        <div class="container form-container">
-            <a href="index.php" style="text-decoration: none; color: #667eea;">← Kembali</a>
+              <hr>
 
-            <h2 class="mt-3 mb-4">Edit Staff</h2>
+              <div class="mb-4">
+                <label for="password" class="form-label fw-semibold">Password Baru <span class="text-muted fw-normal">(opsional)</span></label>
+                <input type="password" class="form-control" id="password" name="password"
+                  placeholder="Kosongkan jika tidak ingin mengubah">
+                <small class="text-muted">Minimum 6 karakter</small>
+              </div>
 
-            <?php if ($error): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <?php echo htmlspecialchars($error); ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            <?php endif; ?>
+              <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                  <i class="bi bi-check-circle me-1"></i> Update
+                </button>
+                <a href="index.php" class="btn btn-outline-secondary">Kembali</a>
+              </div>
+            </form>
+          <?php else: ?>
+            <div class="alert alert-danger">Data admin tidak ditemukan.</div>
+          <?php endif; ?>
 
-            <?php if ($staff): ?>
-                <div class="card">
-                    <div class="card-body p-4">
-                        <form method="POST">
-                            <input type="hidden" name="id_user" value="<?php echo $staff['id_user']; ?>">
-
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" name="username"
-                                    required value="<?php echo htmlspecialchars($staff['username']); ?>">
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="nama" class="form-label">Nama Lengkap</label>
-                                <input type="text" class="form-control" id="nama" name="nama"
-                                    required value="<?php echo htmlspecialchars($staff['nama']); ?>">
-                            </div>
-
-
-
-                            <hr>
-
-                            <div class="mb-4">
-                                <label for="password" class="form-label">Password Baru (opsional)</label>
-                                <input type="password" class="form-control" id="password" name="password"
-                                    placeholder="Kosongkan jika tidak ingin mengubah">
-                                <small class="text-muted">Minimum 6 karakter</small>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-submit">Simpan</button>
-                                <a href="index.php" class="btn btn-outline-secondary">Batal</a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            <?php else: ?>
-                <div class="alert alert-danger">Data staff tidak ditemukan</div>
-            <?php endif; ?>
         </div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-
-</html>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
