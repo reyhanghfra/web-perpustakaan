@@ -3,10 +3,17 @@ require_once __DIR__ . '/../../config/koneksi.php';
 
 $cek_peminjaman = mysqli_query($koneksi, "SHOW COLUMNS FROM peminjaman");
 $kolom_anggota = 'id_anggota';
+<<<<<<< HEAD
 $kolom_buku = 'id_buku'; // FIX: id_buku ada di tabel peminjaman
 while ($k = mysqli_fetch_assoc($cek_peminjaman)) {
     if ($k['Field'] == 'id_user') $kolom_anggota = 'id_user';
     if ($k['Field'] == 'id_buku') $kolom_buku = 'id_buku';
+=======
+$kolom_buku = 'id_buku'; 
+
+while ($k = mysqli_fetch_assoc($cek_peminjaman)) {
+    if ($k['Field'] == 'id_user') $kolom_anggota = 'id_user';
+>>>>>>> 29dededdfe97b4ac3bbfec56c8d49a9ff80224cb
     if ($k['Field'] == 'kode_buku') $kolom_buku = 'kode_buku';
 }
 $cek_anggota = mysqli_query($koneksi, "SHOW COLUMNS FROM anggota");
@@ -19,7 +26,6 @@ $pk_buku = 'id_buku';
 while ($b = mysqli_fetch_assoc($cek_buku)) {
     if ($b['Field'] == 'kode_buku') $pk_buku = 'kode_buku';
 }
-
 
 if (isset($_POST['proses_booking'])) {
     $kode_booking = mysqli_real_escape_string($koneksi, $_POST['kode_booking']);
@@ -54,10 +60,10 @@ if (isset($_GET['aksi']) && $_GET['aksi'] == 'hapus') {
 }
 
 $search = trim($_GET['search'] ?? '');
-$having = '';
+$where_search = '';
 if ($search !== '') {
     $s = mysqli_real_escape_string($koneksi, $search);
-    $having = "HAVING nama_anggota LIKE '%$s%' OR judul_buku LIKE '%$s%' OR kode_booking LIKE '%$s%'";
+    $where_search = "WHERE a.nama LIKE '%$s%' OR b.judul LIKE '%$s%' OR p.kode_booking LIKE '%$s%'";
 }
 
 $page_title = 'Peminjaman';
@@ -92,7 +98,6 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
       </div>
 
-      <!-- Search Bar -->
       <div class="card shadow-sm border-0 mb-3">
         <div class="card-body py-3">
           <form method="GET" action="">
@@ -135,7 +140,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         FROM peminjaman p
                         LEFT JOIN anggota a ON p.$kolom_anggota = a.$pk_anggota
                         LEFT JOIN buku b ON p.$kolom_buku = b.$pk_buku
-                        $having
+                        $where_search
                         ORDER BY p.id_peminjaman DESC";
               $tampil = mysqli_query($koneksi, $query);
               if ($tampil && mysqli_num_rows($tampil) > 0):
