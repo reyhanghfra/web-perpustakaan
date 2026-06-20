@@ -8,14 +8,14 @@ require_once __DIR__ . '/../../config/koneksi.php';
 require_once __DIR__ . '/../../includes/whatsapp.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /web-perpustakaan/pages/booking/');
+    header('Location: ./index.php');
     exit;
 }
 
 $id_booking = intval($_POST['id_booking'] ?? 0);
 
 if ($id_booking === 0) {
-    header('Location: /web-perpustakaan/pages/booking/?error=invalid');
+    header('Location: ./index.php?error=invalid');
     exit;
 }
 
@@ -32,13 +32,13 @@ $booking = mysqli_fetch_assoc(mysqli_query($koneksi,
 
 // Validasi booking ada dan masih aktif
 if (!$booking) {
-    header('Location: /web-perpustakaan/pages/booking/?error=notfound');
+    header('Location: ./index.php?error=notfound');
     exit;
 }
 
 // Validasi stok masih tersedia
 if ($booking['stok'] < 1) {
-    header('Location: /web-perpustakaan/pages/booking/?error=stok');
+    header('Location: ./index.php?error=stok');
     exit;
 }
 
@@ -55,7 +55,7 @@ $sql_pinjam = "INSERT INTO peminjaman
                 ('$kode', $id_anggota, $id_buku, '$tgl_pinjam', '$tgl_kembali', 'Diambil')";
 
 if (!mysqli_query($koneksi, $sql_pinjam)) {
-    header('Location: /web-perpustakaan/pages/booking/?error=pinjam');
+    header('Location: ./index.php?error=pinjam');
     exit;
 }
 
@@ -84,5 +84,5 @@ $pesan .= "Harap kembalikan buku sebelum batas waktu. Terima kasih! 🙏";
 kirimWhatsApp($booking['no_hp'], $pesan);
 
 // Redirect sukses
-header('Location: /web-perpustakaan/pages/booking/?success=1');
+header('Location: ./index.php?success=1');
 exit;
